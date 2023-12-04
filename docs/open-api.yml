@@ -27,10 +27,11 @@ paths:
               example:
                 message: "login success"
                 data: 
-                  id: 1
+                  user_id: 1
                   name: "kijang 1"
                   email: "kijang1@mail.com"
                   image: "/image/users/kijang1.png"
+                  created_at: "7 Sept 2023 | 07.00 pm"
                 token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTE2MjM5MDIyfQ.REZ7ITsosQXYkAKr9WssjuOniMhtP3OSkWpNLwBt8jo"
         "400":
           $ref: "#/components/responses/400"
@@ -46,7 +47,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/register"          
       responses:
-        "200":
+        "201":
           description: "register success"
           content:
             application/json:
@@ -54,11 +55,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "register success"
-                data: 
-                  id: 1
-                  name: "kijang 1"
-                  email: "kijang1@mail.com"
-                  image: "/image/default/user.png"
         "400":
           $ref: "#/components/responses/400"
         "405":
@@ -68,18 +64,11 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /users/{id}:
+  /users:
     get:
       tags:
         - "User"
       summary: "get detail user"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          example: 1
       security:
         - token: []
       responses:
@@ -92,10 +81,11 @@ paths:
               example:
                 message: "get detail of user success"
                 data: 
-                  id: 1
+                  user_id: 1
                   name: "kijang 1"
                   email: "kijang1@mail.com"
                   image: "/image/users/kijang1.png"
+                  created_at: "7 Sept 2023 | 07.00 pm"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -106,17 +96,10 @@ paths:
           $ref: "#/components/responses/405"
         "500":
           $ref: "#/components/responses/500"
-    put:
+    patch:
       tags:
         - "User"
       summary: "update user"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          example: 1
       requestBody:
         $ref: "#/components/requestBodies/userUpdate"
       security:
@@ -130,11 +113,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "update user success"
-                data: 
-                  id: 1
-                  name: "kijang 1"
-                  email: "kijang1@mail.com"
-                  image: "/image/users/kijang1.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -149,13 +127,6 @@ paths:
       tags:
         - "User"
       summary: "delete user"
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          example: 1
       security:
         - token: []
       responses:
@@ -167,11 +138,78 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "delete user success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+  /users/posts:
+    get:
+      tags:
+        - "User"
+      summary: "get user post"
+      security:
+        - token: []
+      responses:
+        "200":
+          description: "success get post of user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "get post of user success"
                 data: 
-                  id: 1
-                  name: "kijang 1"
-                  email: "kijang1@mail.com"
-                  image: "/image/users/kijang1.png"
+                  - post_id: 1
+                    caption: "post caption 1"
+                    image: "/image/posts/post1.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
+                    comment_count: 5
+                    user: 
+                      user_id: 1
+                      name: "kijang 1"
+                      image: "/image/users/kijang1.png"
+                  - post_id: 2
+                    caption: "post caption 2"
+                    image: "/image/posts/post2.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
+                    comment_count: 2
+                    user: 
+                      user_id: 1
+                      name: "kijang 1"
+                      image: "/image/users/kijang1.png"
+                  - post_id: 3
+                    caption: "post caption 3"
+                    image: 
+                    created_at: "7 Sept 2023 | 07.00 pm"
+                    comment_count: 0
+                    user: 
+                      user_id: 2
+                      name: "kijang 2"
+                      image: "/image/users/kijang2.png"
+                  - post_id: 4
+                    caption: "post caption 4"
+                    image: "/image/post4.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
+                    comment_count: 4
+                    user: 
+                      user_id: 2
+                      name: "kijang 2"
+                      image: "/image/users/kijang2.png"
+                  - post_id: 5
+                    caption: "post caption 5"
+                    image: "/image/post5.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
+                    comment_count: 1
+                    user: 
+                      user_id: 2
+                      name: "kijang 2"
+                      image: "/image/users/kijang2.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -220,44 +258,49 @@ paths:
                   prev:
                   next: "/posts?start=6&limit=5"
                 data: 
-                  - id: 1
+                  - post_id: 1
                     caption: "post caption 1"
                     image: "/image/posts/post1.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
                     comment_count: 5
                     user: 
-                      id: 1
+                      user_id: 1
                       name: "kijang 1"
                       image: "/image/users/kijang1.png"
-                  - id: 2
+                  - post_id: 2
                     caption: "post caption 2"
                     image: "/image/posts/post2.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
                     comment_count: 2
                     user: 
-                      id: 1
+                      user_id: 1
                       name: "kijang 1"
                       image: "/image/users/kijang1.png"
-                  - id: 3
+                  - post_id: 3
                     caption: "post caption 3"
                     image: 
+                    created_at: "7 Sept 2023 | 07.00 pm"
                     comment_count: 0
                     user: 
-                      id: 2
+                      user_id: 2
                       name: "kijang 2"
                       image: "/image/users/kijang2.png"
-                  - id: 4
+                  - post_id: 4
                     caption: "post caption 4"
                     image: "/image/post4.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
                     comment_count: 4
                     user: 
-                      id: 2
+                      user_id: 2
                       name: "kijang 2"
                       image: "/image/users/kijang2.png"
-                  - id: 5
+                  - post_id: 5
                     caption: "post caption 5"
                     image: "/image/post5.png"
+                    created_at: "7 Sept 2023 | 07.00 pm"
                     comment_count: 1
                     user: 
-                      id: 2
+                      user_id: 2
                       name: "kijang 2"
                       image: "/image/users/kijang2.png"
         "400":
@@ -277,7 +320,7 @@ paths:
       security:
         - token: []
       responses:
-        "200":
+        "201":
           description: "success create post"
           content:
             application/json:
@@ -285,14 +328,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "create post success"
-                data: 
-                  id: 1
-                  caption: "example caption post 1"
-                  image: "/image/posts/post1.png"
-                  user: 
-                    id: 1
-                    name: "kijang1"
-                    image: "/image/users/kijang1.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -323,24 +358,27 @@ paths:
               example:
                 message: "get detail post success"
                 data: 
-                  id: 1
+                  post_id: 1
                   caption: "post caption 1"
                   image: "/image/posts/post1.png"
+                  created_at: "7 Sept 2023 | 07.00 pm"
                   user: 
-                    id: 1
+                    user_id: 1
                     name: "kijang 1"
                     image: "/image/users/kijang1.png"
                   comment:
-                    - id: 1
+                    - comment_id: 1
                       text: "example comment 1"
+                      created_at: "7 Sept 2023 | 07.00 pm"
                       user:
-                        id: 2
+                        user_id: 2
                         name: "kijang 2"
                         image: "/image/users/kijang2.png"
-                    - id: 2
+                    - comment_id: 2
                       text: "example comment 2"
+                      created_at: "7 Sept 2023 | 07.00 pm"
                       user:
-                        id: 1
+                        user_id: 1
                         name: "kijang 1"
                         image: "/image/users/kijang1.png"
         "400":
@@ -377,14 +415,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "update post success"
-                data: 
-                  id: 1
-                  caption: "example caption post 1"
-                  image: "/image/posts/post1.png"
-                  user: 
-                    id: 1
-                    name: "kijang1"
-                    image: "/image/users/kijang1.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -417,14 +447,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "delete post success"
-                data: 
-                  id: 1
-                  caption: "example caption post 1"
-                  image: "/image/posts/post1.png"
-                  user: 
-                    id: 1
-                    name: "kijang1"
-                    image: "/image/users/kijang1.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -446,7 +468,7 @@ paths:
       security:
         - token: []
       responses:
-        "200":
+        "201":
           description: "success create comment"
           content:
             application/json:
@@ -454,13 +476,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "create comment success"
-                data: 
-                  id: 1
-                  text: "example comment 1"
-                  user: 
-                    id: 1
-                    name: "kijang1"
-                    image: "/image/users/kijang1.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -492,13 +507,6 @@ paths:
                 $ref: "#/components/schemas/defaultResponse"
               example:
                 message: "delete comment success"
-                data:
-                  id: 1
-                  text: "example comment 1"
-                  user: 
-                    id: 1
-                    name: "kijang1"
-                    image: "/image/users/kijang1.png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -614,11 +622,6 @@ components:
           example: "secret"
     userUpdateRequest:
       type: object
-      required:
-        - "name"
-        - "email"
-        - "password"
-        - "image"
       properties:
         name:
           type: string
@@ -667,23 +670,11 @@ components:
   requestBodies:
     login:
       content:
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: "#/components/schemas/loginRequest"
-        multipart/form-data:
-          schema:
-            $ref: "#/components/schemas/loginRequest"
         application/json:
           schema:
             $ref: "#/components/schemas/loginRequest"
     register:
       content:
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: "#/components/schemas/registerRequest"
-        multipart/form-data:
-          schema:
-            $ref: "#/components/schemas/registerRequest"
         application/json:
           schema:
             $ref: "#/components/schemas/registerRequest"
