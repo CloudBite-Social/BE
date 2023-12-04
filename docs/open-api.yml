@@ -232,18 +232,21 @@ paths:
           required: false
           schema:
             type: integer
+            default: 0
           example: 0
         - in: query
           name: limit
           required: false
           schema:
             type: integer
+            default: 5
           example: 5
         - in: query
           name: keyword
           required: false
           schema:
             type: string
+            default: 
           example: "post"
       responses:
         "200":
@@ -625,10 +628,13 @@ components:
       properties:
         name:
           type: string
+          example: "kijang1"
         email:
           type: string
+          example: "kijang1@mail.com"
         password:
           type: string
+          example: "kijang1"
         image:
           type: string
           format: binary
@@ -638,6 +644,7 @@ components:
       properties:
         caption:
           type: string
+          example: "example post 1"
         image:
           type: string
           format: binary
@@ -658,8 +665,10 @@ components:
       properties:
         post_id:
           type: integer
+          example: 1
         text:
           type: string
+          example: "example comment 1"
 
   securitySchemes:
     token:
@@ -670,12 +679,12 @@ components:
   requestBodies:
     login:
       content:
-        application/json:
+        multipart/form-data:
           schema:
             $ref: "#/components/schemas/loginRequest"
     register:
       content:
-        application/json:
+        multipart/form-data:
           schema:
             $ref: "#/components/schemas/registerRequest"
     userUpdate:
