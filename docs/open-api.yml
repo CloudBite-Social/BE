@@ -30,9 +30,9 @@ paths:
                   user_id: 1
                   name: "kijang 1"
                   email: "kijang1@mail.com"
-                  image: "/image/users/kijang1.png"
-                  created_at: "7 Sept 2023 | 07.00 pm"
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTE2MjM5MDIyfQ.REZ7ITsosQXYkAKr9WssjuOniMhtP3OSkWpNLwBt8jo"
+                  image: "https://placehold.co/400x400/png"
+                  created_at: "2023-12-05T06:57:29.370Z"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTE2MjM5MDIyfQ.REZ7ITsosQXYkAKr9WssjuOniMhtP3OSkWpNLwBt8jo"
         "400":
           $ref: "#/components/responses/400"
         "405":
@@ -84,8 +84,35 @@ paths:
                   user_id: 1
                   name: "kijang 1"
                   email: "kijang1@mail.com"
-                  image: "/image/users/kijang1.png"
-                  created_at: "7 Sept 2023 | 07.00 pm"
+                  image: "https://placehold.co/400x400/png"
+                  created_at: "2023-12-05T06:57:29.370Z"
+                  posts:
+                    - post_id: 1
+                      caption: "post caption 1"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 5
+                    - post_id: 2
+                      caption: "post caption 2"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 2
+                    - post_id: 3
+                      caption: "post caption 3"
+                      image: 
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 0
+                    - post_id: 4
+                      caption: "post caption 4"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 4
+                    - post_id: 5
+                      caption: "post caption 5"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 1
+
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -148,59 +175,7 @@ paths:
           $ref: "#/components/responses/405"
         "500":
           $ref: "#/components/responses/500"
-  /users/posts:
-    get:
-      tags:
-        - "User"
-      summary: "get user post"
-      security:
-        - token: []
-      responses:
-        "200":
-          description: "success get post of user"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/defaultResponse"
-              example:
-                message: "get post of user success"
-                data: 
-                  - post_id: 1
-                    caption: "post caption 1"
-                    image: "/image/posts/post1.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
-                    comment_count: 5
-                  - post_id: 2
-                    caption: "post caption 2"
-                    image: "/image/posts/post2.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
-                    comment_count: 2
-                  - post_id: 3
-                    caption: "post caption 3"
-                    image: 
-                    created_at: "7 Sept 2023 | 07.00 pm"
-                    comment_count: 0
-                  - post_id: 4
-                    caption: "post caption 4"
-                    image: "/image/post4.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
-                    comment_count: 4
-                  - post_id: 5
-                    caption: "post caption 5"
-                    image: "/image/post5.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
-                    comment_count: 1
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "405":
-          $ref: "#/components/responses/405"
-        "500":
-          $ref: "#/components/responses/500"
-
+  
   /posts:
     get:
       tags:
@@ -239,53 +214,53 @@ paths:
                 message: "get list post success"
                 pagination:
                   prev:
-                  next: "/posts?start=6&limit=5"
+                  next: "https://virtserver.swaggerhub.com/HERUSETIAWAN_1/sosmed/1.0.0/posts?start=6&limit=5"
                 data: 
                   - post_id: 1
                     caption: "post caption 1"
-                    image: "/image/posts/post1.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
                     comment_count: 5
                     user: 
                       user_id: 1
                       name: "kijang 1"
-                      image: "/image/users/kijang1.png"
+                      image: "https://placehold.co/400x400/png"
                   - post_id: 2
                     caption: "post caption 2"
-                    image: "/image/posts/post2.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
                     comment_count: 2
                     user: 
                       user_id: 1
                       name: "kijang 1"
-                      image: "/image/users/kijang1.png"
+                      image: "https://placehold.co/400x400/png"
                   - post_id: 3
                     caption: "post caption 3"
                     image: 
-                    created_at: "7 Sept 2023 | 07.00 pm"
+                    created_at: "2023-12-05T06:57:29.370Z"
                     comment_count: 0
                     user: 
                       user_id: 2
                       name: "kijang 2"
-                      image: "/image/users/kijang2.png"
+                      image: "https://placehold.co/400x400/png"
                   - post_id: 4
                     caption: "post caption 4"
-                    image: "/image/post4.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
                     comment_count: 4
                     user: 
                       user_id: 2
                       name: "kijang 2"
-                      image: "/image/users/kijang2.png"
+                      image: "https://placehold.co/400x400/png"
                   - post_id: 5
                     caption: "post caption 5"
-                    image: "/image/post5.png"
-                    created_at: "7 Sept 2023 | 07.00 pm"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
                     comment_count: 1
                     user: 
                       user_id: 2
                       name: "kijang 2"
-                      image: "/image/users/kijang2.png"
+                      image: "https://placehold.co/400x400/png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -343,27 +318,27 @@ paths:
                 data: 
                   post_id: 1
                   caption: "post caption 1"
-                  image: "/image/posts/post1.png"
-                  created_at: "7 Sept 2023 | 07.00 pm"
+                  image: "https://placehold.co/800x400/png"
+                  created_at: "2023-12-05T06:57:29.370Z"
                   user: 
                     user_id: 1
                     name: "kijang 1"
-                    image: "/image/users/kijang1.png"
+                    image: "https://placehold.co/400x400/png"
                   comment:
                     - comment_id: 1
                       text: "example comment 1"
-                      created_at: "7 Sept 2023 | 07.00 pm"
+                      created_at: "2023-12-05T06:57:29.370Z"
                       user:
                         user_id: 2
                         name: "kijang 2"
-                        image: "/image/users/kijang2.png"
+                        image: "https://placehold.co/400x400/png"
                     - comment_id: 2
                       text: "example comment 2"
-                      created_at: "7 Sept 2023 | 07.00 pm"
+                      created_at: "2023-12-05T06:57:29.370Z"
                       user:
                         user_id: 1
                         name: "kijang 1"
-                        image: "/image/users/kijang1.png"
+                        image: "https://placehold.co/400x400/png"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -659,12 +634,12 @@ components:
   requestBodies:
     login:
       content:
-        multipart/form-data:
+        application/json:
           schema:
             $ref: "#/components/schemas/loginRequest"
     register:
       content:
-        multipart/form-data:
+        application/json:
           schema:
             $ref: "#/components/schemas/registerRequest"
     userUpdate:
@@ -686,7 +661,7 @@ components:
 
     commentCreate:
       content:
-        multipart/form-data:
+        application/json:
           schema:
             $ref: "#/components/schemas/commentCreateRequest"
      
