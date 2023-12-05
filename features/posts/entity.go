@@ -1,9 +1,14 @@
 package posts
 
 import (
+	"context"
+	"io"
 	"sosmed/features/comments"
 	"sosmed/features/users"
+	"sosmed/helpers/filters"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Post struct {
@@ -21,16 +26,36 @@ type Post struct {
 }
 
 type File struct {
-	Id   uint
-	Path string
+	Id  uint
+	URL string
+
+	Raw io.Reader
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
 
-type Handler interface{}
+type Handler interface {
+	GetList() echo.HandlerFunc
+	GetById() echo.HandlerFunc
+	Create() echo.HandlerFunc
+	Update() echo.HandlerFunc
+	Delete() echo.HandlerFunc
+}
 
-type Service interface{}
+type Service interface {
+	GetList(ctx context.Context, filter filters.Filter) ([]Post, error)
+	GetById(ctx context.Context, postId uint) (*Post, error)
+	Create(ctx context.Context, data Post) error
+	Update(ctx context.Context, postId uint, data Post) error
+	Delete(ctx context.Context, postId uint) error
+}
 
-type Repository interface{}
+type Repository interface {
+	GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]Post, error)
+	GetById(ctx context.Context, postId uint) (*Post, error)
+	Create(ctx context.Context, data Post) error
+	Update(ctx context.Context, postId uint, data Post) error
+	Delete(ctx context.Context, postId uint) error
+}
