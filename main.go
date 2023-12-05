@@ -2,7 +2,10 @@ package main
 
 import (
 	"sosmed/config"
+	"sosmed/routes"
 	"sosmed/utils/database"
+
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
@@ -19,4 +22,14 @@ func main() {
 	if err := database.MysqlMigrate(dbConnection); err != nil {
 		panic(err)
 	}
+
+	app := echo.New()
+
+	route := routes.Routes{
+		Server: app,
+	}
+
+	route.InitRouter()
+
+	app.Logger.Fatal(app.Start(":8000"))
 }
