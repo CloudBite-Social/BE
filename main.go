@@ -9,6 +9,10 @@ import (
 	pr "sosmed/features/posts/repository"
 	ps "sosmed/features/posts/service"
 
+	ch "sosmed/features/comments/handler"
+	cr "sosmed/features/comments/repository"
+	cs "sosmed/features/comments/service"
+
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/labstack/echo/v4"
 )
@@ -42,11 +46,16 @@ func main() {
 	postService := ps.NewPostService(postRepository)
 	postHandler := ph.NewPostHandler(postService)
 
+	commentRepository := cr.NewCommentRepository(dbConnection)
+	commentService := cs.NewCommentService(commentRepository)
+	commentHandler := ch.NewCommentHandler(commentService)
+
 	app := echo.New()
 
 	route := routes.Routes{
-		Server:      app,
-		PostHandler: postHandler,
+		Server:         app,
+		PostHandler:    postHandler,
+		CommentHandler: commentHandler,
 	}
 
 	route.InitRouter()

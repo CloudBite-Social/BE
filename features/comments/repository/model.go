@@ -3,6 +3,7 @@ package repository
 import (
 	"time"
 
+	"sosmed/features/comments"
 	ur "sosmed/features/users/repository"
 
 	"gorm.io/gorm"
@@ -20,4 +21,18 @@ type Comment struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+func (mod *Comment) FromEntity(ent comments.Comment) {
+	if ent.Text != "" {
+		mod.Text = ent.Text
+	}
+
+	if ent.PostId != 0 {
+		mod.PostId = ent.PostId
+	}
+
+	if ent.User.Id != 0 {
+		mod.UserId = ent.User.Id
+	}
 }

@@ -35,4 +35,5 @@ func (router *Routes) PostRouter() {
 }
 
 func (router *Routes) CommentRouter() {
+	router.Server.POST("/comments", router.CommentHandler.Create(), echojwt.JWT([]byte("altamantul")))
 }
