@@ -132,7 +132,7 @@ func (hdl *postHandler) GetList() echo.HandlerFunc {
 		var search = new(filters.Search)
 		c.Bind(search)
 
-		result, totalData, err := hdl.service.GetList(c.Request().Context(), filters.Filter{Pagination: *pagination, Search: *search})
+		result, totalData, err := hdl.service.GetList(c.Request().Context(), filters.Filter{Pagination: *pagination, Search: *search}, nil)
 		if err != nil {
 			c.Logger().Error(err)
 

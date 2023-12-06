@@ -45,7 +45,7 @@ type Handler interface {
 }
 
 type Service interface {
-	GetList(ctx context.Context, filter filters.Filter) ([]Post, int, error)
+	GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]Post, int, error)
 	GetById(ctx context.Context, postId uint) (*Post, error)
 	Create(ctx context.Context, data Post) error
 	Update(ctx context.Context, postId uint, data Post) error
