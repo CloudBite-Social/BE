@@ -8,12 +8,12 @@ import (
 )
 
 type PostResponse struct {
-	Id      uint   `json:"id,omitempty"`
+	Id      uint   `json:"post_id,omitempty"`
 	Caption string `json:"caption,omitempty"`
 	Image   string `json:"image,omitempty"`
 
 	User struct {
-		Id    uint   `json:"id,omitempty"`
+		Id    uint   `json:"user_id,omitempty"`
 		Name  string `json:"name,omitempty"`
 		Image string `json:"image,omitempty"`
 
@@ -22,11 +22,11 @@ type PostResponse struct {
 
 	CommentCount *int `json:"comment_count,omitempty"`
 	Comments     []struct {
-		Id        uint      `json:"id,omitempty"`
+		Id        uint      `json:"comment_id,omitempty"`
 		Text      string    `json:"text,omitempty"`
 		CreatedAt time.Time `json:"created_at"`
 		User      struct {
-			Id    uint   `json:"id,omitempty"`
+			Id    uint   `json:"user_id,omitempty"`
 			Name  string `json:"name,omitempty"`
 			Image string `json:"image,omitempty"`
 
@@ -78,11 +78,11 @@ func (res *PostResponse) FromEntity(ent posts.Post, onlyCommentCount bool) {
 		for _, comment := range ent.Comments {
 			if !reflect.ValueOf(comment).IsZero() {
 				var tempComment = struct {
-					Id        uint      `json:"id,omitempty"`
+					Id        uint      `json:"comment_id,omitempty"`
 					Text      string    `json:"text,omitempty"`
 					CreatedAt time.Time `json:"created_at"`
 					User      struct {
-						Id        uint      `json:"id,omitempty"`
+						Id        uint      `json:"user_id,omitempty"`
 						Name      string    `json:"name,omitempty"`
 						Image     string    `json:"image,omitempty"`
 						CreatedAt time.Time `json:"created_at"`
