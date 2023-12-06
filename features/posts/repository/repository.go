@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"sosmed/features/posts"
 	"sosmed/helpers/filters"
 
@@ -67,5 +68,14 @@ func (repo *postRepository) Update(ctx context.Context, postId uint, data posts.
 }
 
 func (repo *postRepository) Delete(ctx context.Context, postId uint) error {
-	panic("unimplemented")
+	qry := repo.mysqlDB.WithContext(ctx).Delete(&Post{Id: postId})
+	if qry.Error != nil {
+		return qry.Error
+	}
+
+	if qry.RowsAffected == 0 {
+		return errors.New("data not found")
+	}
+
+	return nil
 }

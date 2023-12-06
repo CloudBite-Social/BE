@@ -52,5 +52,13 @@ func (srv *postService) Update(ctx context.Context, postId uint, data posts.Post
 }
 
 func (srv *postService) Delete(ctx context.Context, postId uint) error {
-	panic("unimplemented")
+	if postId == 0 {
+		return errors.New("invalid data")
+	}
+
+	if err := srv.repo.Delete(ctx, postId); err != nil {
+		return err
+	}
+
+	return nil
 }
