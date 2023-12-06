@@ -71,12 +71,13 @@ func (_m *Repository) GetById(ctx context.Context, postId uint) (*posts.Post, er
 }
 
 // GetList provides a mock function with given fields: ctx, filter, userId
-func (_m *Repository) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, error) {
+func (_m *Repository) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, int, error) {
 	ret := _m.Called(ctx, filter, userId)
 
 	var r0 []posts.Post
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter, *uint) ([]posts.Post, error)); ok {
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter, *uint) ([]posts.Post, int, error)); ok {
 		return rf(ctx, filter, userId)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter, *uint) []posts.Post); ok {
@@ -87,13 +88,19 @@ func (_m *Repository) GetList(ctx context.Context, filter filters.Filter, userId
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, filters.Filter, *uint) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, filters.Filter, *uint) int); ok {
 		r1 = rf(ctx, filter, userId)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(context.Context, filters.Filter, *uint) error); ok {
+		r2 = rf(ctx, filter, userId)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // Update provides a mock function with given fields: ctx, postId, data

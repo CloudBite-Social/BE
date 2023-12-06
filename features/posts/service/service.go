@@ -43,8 +43,13 @@ func (srv *postService) GetById(ctx context.Context, postId uint) (*posts.Post, 
 	return result, nil
 }
 
-func (srv *postService) GetList(ctx context.Context, filter filters.Filter) ([]posts.Post, error) {
-	panic("unimplemented")
+func (srv *postService) GetList(ctx context.Context, filter filters.Filter) ([]posts.Post, int, error) {
+	result, totalData, err := srv.repo.GetList(ctx, filter, nil)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return result, totalData, nil
 }
 
 func (srv *postService) Update(ctx context.Context, postId uint, data posts.Post) error {

@@ -20,7 +20,8 @@ type PostResponse struct {
 		CreatedAt time.Time `json:"created_at"`
 	} `json:"user,omitempty"`
 
-	Comments []struct {
+	CommentCount *int `json:"comment_count,omitempty"`
+	Comments     []struct {
 		Id        uint      `json:"id,omitempty"`
 		Text      string    `json:"text,omitempty"`
 		CreatedAt time.Time `json:"created_at"`
@@ -36,7 +37,7 @@ type PostResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (res *PostResponse) FromEntity(ent posts.Post) {
+func (res *PostResponse) FromEntity(ent posts.Post, onlyCommentCount bool) {
 	if ent.Id != 0 {
 		res.Id = ent.Id
 	}
@@ -67,7 +68,13 @@ func (res *PostResponse) FromEntity(ent posts.Post) {
 		}
 	}
 
-	if len(ent.Comments) != 0 {
+	if onlyCommentCount {
+		commentCount := 0
+		if len(ent.Comments) != 0 {
+			commentCount = len(ent.Comments)
+		}
+		res.CommentCount = &commentCount
+	} else if len(ent.Comments) != 0 {
 		for _, comment := range ent.Comments {
 			if !reflect.ValueOf(comment).IsZero() {
 				var tempComment = struct {

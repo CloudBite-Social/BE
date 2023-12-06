@@ -59,8 +59,35 @@ func (repo *postRepository) GetById(ctx context.Context, postId uint) (*posts.Po
 	return result.ToEntity(), nil
 }
 
-func (repo *postRepository) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, error) {
-	panic("unimplemented")
+func (repo *postRepository) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, int, error) {
+	var data []Post
+	var totalData = new(int64)
+
+	qry := repo.mysqlDB.WithContext(ctx).Model(&Post{})
+
+	if filter.Search.Keyword != "" {
+		qry = qry.Where("caption LIKE ?", "%"+filter.Search.Keyword+"%")
+	}
+
+	if userId != nil {
+		qry = qry.Where(&Post{UserId: *userId})
+	}
+
+	qry.Count(totalData)
+
+	qry = qry.Preload("User").Preload("Comment").Preload("Attachment")
+	qry = qry.Limit(filter.Pagination.Limit).Offset(filter.Pagination.Start)
+
+	if err := qry.Take(&data).Error; err != nil {
+		return nil, 0, err
+	}
+
+	var result []posts.Post
+	for _, mod := range data {
+		result = append(result, *mod.ToEntity())
+	}
+
+	return result, int(*totalData), nil
 }
 
 func (repo *postRepository) Update(ctx context.Context, postId uint, data posts.Post) error {

@@ -45,7 +45,7 @@ type Handler interface {
 }
 
 type Service interface {
-	GetList(ctx context.Context, filter filters.Filter) ([]Post, error)
+	GetList(ctx context.Context, filter filters.Filter) ([]Post, int, error)
 	GetById(ctx context.Context, postId uint) (*Post, error)
 	Create(ctx context.Context, data Post) error
 	Update(ctx context.Context, postId uint, data Post) error
@@ -53,7 +53,7 @@ type Service interface {
 }
 
 type Repository interface {
-	GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]Post, error)
+	GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]Post, int, error)
 	GetById(ctx context.Context, postId uint) (*Post, error)
 	Create(ctx context.Context, data Post) error
 	Update(ctx context.Context, postId uint, data Post) error

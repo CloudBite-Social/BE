@@ -7,6 +7,7 @@ import (
 	"sosmed/features/posts"
 	"sosmed/features/posts/mocks"
 	"sosmed/features/users"
+	"sosmed/helpers/filters"
 	"testing"
 	"time"
 
@@ -138,6 +139,96 @@ func TestPostServiceGetById(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.EqualValues(t, caseResult, result)
+
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestPostServiceGetList(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var srv = NewPostService(repo)
+	var ctx = context.Background()
+
+	t.Run("repository error", func(t *testing.T) {
+		var caseFilter = filters.Filter{
+			Search: filters.Search{Keyword: "caption"},
+			Pagination: filters.Pagination{
+				Limit: 1,
+				Start: 0,
+			},
+		}
+		repo.On("GetList", ctx, caseFilter, (*uint)(nil)).Return(nil, 0, errors.New("some error from repository")).Once()
+
+		result, total, err := srv.GetList(ctx, caseFilter)
+
+		assert.ErrorContains(t, err, "some error from repository")
+		assert.Equal(t, 0, total)
+		assert.Nil(t, result)
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		var caseTotal = 10
+		var caseFilter = filters.Filter{
+			Search: filters.Search{Keyword: "caption"},
+			Pagination: filters.Pagination{
+				Limit: 1,
+				Start: 0,
+			},
+		}
+		var caseResult = []posts.Post{
+			{
+				Id:      1,
+				Caption: "example caption 1",
+				User: users.User{
+					Id:        1,
+					Name:      "kijang 1",
+					Email:     "kijang1@mail.com",
+					Password:  "$2a$10$dhhW17wM2yzPwD0qrURWHez5eUtyrYxFKSuqw/Udjpd22j1xzTP0W",
+					Image:     "https://placehold.co/400x400/png",
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+				},
+				Comments: []comments.Comment{
+					{
+						Id:     1,
+						Text:   "example comment",
+						PostId: 1,
+						User: users.User{
+							Id:        2,
+							Name:      "kijang 2",
+							Email:     "kijang2@mail.com",
+							Password:  "$2a$10$xb6YMHB1G1.fQMtHahcDHuLf3b7E4pMdcCBPrYjpdrfO4ImUmQhhW",
+							Image:     "https://placehold.co/400x400/png",
+							CreatedAt: time.Now(),
+							UpdatedAt: time.Now(),
+						},
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					},
+				},
+				Attachment: []posts.File{
+					{
+						Id:        1,
+						URL:       "https://placehold.co/600x400/png",
+						Raw:       nil,
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					},
+				},
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+		}
+
+		repo.On("GetList", ctx, caseFilter, (*uint)(nil)).Return(caseResult, caseTotal, nil).Once()
+
+		result, total, err := srv.GetList(ctx, caseFilter)
+
+		assert.NoError(t, err)
+		assert.Equal(t, caseTotal, total)
+		assert.Equal(t, caseResult, result)
 
 		repo.AssertExpectations(t)
 	})

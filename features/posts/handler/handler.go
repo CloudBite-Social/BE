@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"sosmed/features/posts"
+	"sosmed/helpers/filters"
 	"sosmed/helpers/tokens"
 	"strconv"
 	"strings"
@@ -108,7 +110,7 @@ func (hdl *postHandler) GetById() echo.HandlerFunc {
 		}
 
 		var data = new(PostResponse)
-		data.FromEntity(*result)
+		data.FromEntity(*result, false)
 
 		response["message"] = "get detail post success"
 		response["data"] = data
@@ -117,7 +119,53 @@ func (hdl *postHandler) GetById() echo.HandlerFunc {
 }
 
 func (hdl *postHandler) GetList() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+		var baseUrl = c.Scheme() + "://" + c.Request().Host
+
+		var pagination = new(filters.Pagination)
+		c.Bind(pagination)
+		if pagination.Limit == 0 {
+			pagination.Limit = 5
+		}
+
+		var search = new(filters.Search)
+		c.Bind(search)
+
+		result, totalData, err := hdl.service.GetList(c.Request().Context(), filters.Filter{Pagination: *pagination, Search: *search})
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		var data []PostResponse
+
+		for _, res := range result {
+			tempRes := new(PostResponse)
+			tempRes.FromEntity(res, true)
+			data = append(data, *tempRes)
+		}
+
+		var paginationResponse = make(map[string]any)
+		if pagination.Start > (pagination.Limit) {
+			paginationResponse["prev"] = fmt.Sprintf("%s/%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Limit-pagination.Start, pagination.Limit)
+		} else {
+			paginationResponse["prev"] = nil
+		}
+
+		if totalData > (pagination.Limit*2)+pagination.Start {
+			paginationResponse["next"] = fmt.Sprintf("%s/%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Start+pagination.Limit, pagination.Limit)
+		} else {
+			paginationResponse["next"] = nil
+		}
+
+		response["message"] = "get list post success"
+		response["pagination"] = paginationResponse
+		response["data"] = data
+		return c.JSON(http.StatusOK, response)
+	}
 }
 
 func (hdl *postHandler) Update() echo.HandlerFunc {
