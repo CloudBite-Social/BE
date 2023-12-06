@@ -5,6 +5,7 @@ import (
 	"sosmed/features/posts"
 	"sosmed/features/users"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,6 +27,7 @@ func (router *Routes) UserRouter() {
 }
 
 func (router *Routes) PostRouter() {
+	router.Server.POST("/posts", router.PostHandler.Create(), echojwt.JWT([]byte("altamantul")))
 }
 
 func (router *Routes) CommentRouter() {
