@@ -143,6 +143,93 @@ func TestPostServiceGetById(t *testing.T) {
 	})
 }
 
+func TestPostServiceUpdate(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var srv = NewPostService(repo)
+	var ctx = context.Background()
+
+	t.Run("invalid id", func(t *testing.T) {
+		var caseData = posts.Post{}
+		err := srv.Update(ctx, 0, caseData)
+
+		assert.ErrorContains(t, err, "invalid data")
+	})
+
+	t.Run("invalid caption", func(t *testing.T) {
+		var caseData = posts.Post{
+			Caption: "",
+		}
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "invalid data")
+	})
+
+	t.Run("invalid file attachment", func(t *testing.T) {
+		var caseData = posts.Post{
+			Caption:    "example post 1",
+			Attachment: []posts.File{},
+		}
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "invalid data")
+	})
+
+	t.Run("repository error", func(t *testing.T) {
+		var caseData = posts.Post{
+			Caption: "example post 1",
+			Attachment: []posts.File{
+				{
+					Raw: nil,
+				},
+			},
+		}
+		repo.On("Update", ctx, uint(1), caseData).Return(errors.New("some error from repository")).Once()
+
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "some error from repository")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("data not found", func(t *testing.T) {
+		var caseData = posts.Post{
+			Caption: "example post 1",
+			Attachment: []posts.File{
+				{
+					Raw: nil,
+				},
+			},
+		}
+		repo.On("Update", ctx, uint(1), caseData).Return(errors.New("data not found")).Once()
+
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "data not found")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		var caseData = posts.Post{
+			Caption: "example post 1",
+			Attachment: []posts.File{
+				{
+					Raw: nil,
+				},
+			},
+		}
+
+		repo.On("Update", ctx, uint(1), caseData).Return(nil).Once()
+
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.NoError(t, err)
+
+		repo.AssertExpectations(t)
+	})
+}
+
 func TestPostServiceDelete(t *testing.T) {
 	var repo = mocks.NewRepository(t)
 	var srv = NewPostService(repo)
