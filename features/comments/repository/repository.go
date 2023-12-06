@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"sosmed/features/comments"
 
 	"gorm.io/gorm"
@@ -29,5 +30,16 @@ func (repo *commentRepository) Create(ctx context.Context, data comments.Comment
 }
 
 func (repo *commentRepository) Delete(ctx context.Context, commentId uint) error {
-	panic("unimplemented")
+	qry := repo.mysqlDB.WithContext(ctx).Delete(&Comment{Id: commentId})
+	if qry.Error != nil {
+		return qry.Error
+	}
+
+	if qry.RowsAffected == 0 {
+		return errors.New("data not found")
+	}
+
+	return nil
+
+	return nil
 }

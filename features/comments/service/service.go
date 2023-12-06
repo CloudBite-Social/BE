@@ -37,5 +37,13 @@ func (srv *commentService) Create(ctx context.Context, data comments.Comment) er
 }
 
 func (srv *commentService) Delete(ctx context.Context, commentId uint) error {
-	panic("unimplemented")
+	if commentId == 0 {
+		return errors.New("invalid data")
+	}
+
+	if err := srv.repo.Delete(ctx, commentId); err != nil {
+		return err
+	}
+
+	return nil
 }
