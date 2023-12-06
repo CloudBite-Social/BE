@@ -125,5 +125,35 @@ func (hdl *postHandler) Update() echo.HandlerFunc {
 }
 
 func (hdl *postHandler) Delete() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+
+		postId, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "bad request"
+			return c.JSON(http.StatusBadRequest, response)
+		}
+
+		if err := hdl.service.Delete(c.Request().Context(), uint(postId)); err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "invalid data") {
+				response["message"] = "bad request"
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		response["message"] = "delete post success"
+		return c.JSON(http.StatusOK, response)
+	}
 }

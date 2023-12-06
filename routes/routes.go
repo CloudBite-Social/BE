@@ -29,6 +29,7 @@ func (router *Routes) UserRouter() {
 func (router *Routes) PostRouter() {
 	router.Server.POST("/posts", router.PostHandler.Create(), echojwt.JWT([]byte("altamantul")))
 	router.Server.GET("/posts/:id", router.PostHandler.GetById())
+	router.Server.DELETE("/posts/:id", router.PostHandler.Delete(), echojwt.JWT([]byte("altamantul")))
 }
 
 func (router *Routes) CommentRouter() {
