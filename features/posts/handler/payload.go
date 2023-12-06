@@ -4,6 +4,7 @@ import (
 	"io"
 	"reflect"
 	"sosmed/features/posts"
+	"time"
 )
 
 type PostResponse struct {
@@ -15,17 +16,24 @@ type PostResponse struct {
 		Id    uint   `json:"id,omitempty"`
 		Name  string `json:"name,omitempty"`
 		Image string `json:"image,omitempty"`
+
+		CreatedAt time.Time `json:"created_at"`
 	} `json:"user,omitempty"`
 
 	Comments []struct {
-		Id   uint   `json:"id,omitempty"`
-		Text string `json:"text,omitempty"`
-		User struct {
+		Id        uint      `json:"id,omitempty"`
+		Text      string    `json:"text,omitempty"`
+		CreatedAt time.Time `json:"created_at"`
+		User      struct {
 			Id    uint   `json:"id,omitempty"`
 			Name  string `json:"name,omitempty"`
 			Image string `json:"image,omitempty"`
+
+			CreatedAt time.Time `json:"created_at"`
 		} `json:"user,omitempty"`
-	} `json:"comment,omitempty"`
+	} `json:"comment"`
+
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (res *PostResponse) FromEntity(ent posts.Post) {
@@ -53,18 +61,24 @@ func (res *PostResponse) FromEntity(ent posts.Post) {
 		if ent.User.Image != "" {
 			res.User.Image = ent.User.Image
 		}
+
+		if !ent.User.CreatedAt.IsZero() {
+			res.User.CreatedAt = ent.User.CreatedAt
+		}
 	}
 
 	if len(ent.Comments) != 0 {
 		for _, comment := range ent.Comments {
 			if !reflect.ValueOf(comment).IsZero() {
 				var tempComment = struct {
-					Id   uint   `json:"id,omitempty"`
-					Text string `json:"text,omitempty"`
-					User struct {
-						Id    uint   `json:"id,omitempty"`
-						Name  string `json:"name,omitempty"`
-						Image string `json:"image,omitempty"`
+					Id        uint      `json:"id,omitempty"`
+					Text      string    `json:"text,omitempty"`
+					CreatedAt time.Time `json:"created_at"`
+					User      struct {
+						Id        uint      `json:"id,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Image     string    `json:"image,omitempty"`
+						CreatedAt time.Time `json:"created_at"`
 					} `json:"user,omitempty"`
 				}{}
 
@@ -88,11 +102,23 @@ func (res *PostResponse) FromEntity(ent posts.Post) {
 					if comment.User.Image != "" {
 						tempComment.User.Image = comment.User.Image
 					}
+
+					if !comment.User.CreatedAt.IsZero() {
+						tempComment.User.CreatedAt = comment.User.CreatedAt
+					}
+				}
+
+				if !comment.CreatedAt.IsZero() {
+					tempComment.CreatedAt = comment.CreatedAt
 				}
 
 				res.Comments = append(res.Comments, tempComment)
 			}
 		}
+	}
+
+	if !ent.CreatedAt.IsZero() {
+		res.CreatedAt = ent.CreatedAt
 	}
 }
 

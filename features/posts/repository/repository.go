@@ -49,7 +49,13 @@ func (repo *postRepository) Create(ctx context.Context, data posts.Post) error {
 }
 
 func (repo *postRepository) GetById(ctx context.Context, postId uint) (*posts.Post, error) {
-	panic("unimplemented")
+	var result = new(Post)
+
+	if err := repo.mysqlDB.WithContext(ctx).Preload("User").Preload("Comment").Preload("Comment.User").Preload("Attachment").First(result, postId).Error; err != nil {
+		return nil, err
+	}
+
+	return result.ToEntity(), nil
 }
 
 func (repo *postRepository) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, error) {
