@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sosmed/features/comments"
 	"sosmed/helpers/tokens"
+	"strconv"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -59,5 +60,35 @@ func (hdl *commentHandler) Create() echo.HandlerFunc {
 }
 
 func (hdl *commentHandler) Delete() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+
+		commentId, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "bad request"
+			return c.JSON(http.StatusBadRequest, response)
+		}
+
+		if err := hdl.service.Delete(c.Request().Context(), uint(commentId)); err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "invalid data") {
+				response["message"] = "bad request"
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		response["message"] = "delete comment success"
+		return c.JSON(http.StatusOK, response)
+	}
 }
