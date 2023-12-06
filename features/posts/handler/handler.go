@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sosmed/features/posts"
 	"sosmed/helpers/tokens"
+	"strconv"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -77,7 +78,42 @@ func (hdl *postHandler) Create() echo.HandlerFunc {
 }
 
 func (hdl *postHandler) GetById() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+
+		postId, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "bad request"
+			return c.JSON(http.StatusBadRequest, response)
+		}
+
+		result, err := hdl.service.GetById(c.Request().Context(), uint(postId))
+		if err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "invalid data") {
+				response["message"] = "bad request"
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		var data = new(PostResponse)
+		data.FromEntity(*result)
+
+		response["message"] = "get detail post success"
+		response["data"] = data
+		return c.JSON(http.StatusOK, response)
+	}
 }
 
 func (hdl *postHandler) GetList() echo.HandlerFunc {

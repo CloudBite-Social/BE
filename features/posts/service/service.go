@@ -31,7 +31,16 @@ func (srv *postService) Create(ctx context.Context, data posts.Post) error {
 }
 
 func (srv *postService) GetById(ctx context.Context, postId uint) (*posts.Post, error) {
-	panic("unimplemented")
+	if postId == 0 {
+		return nil, errors.New("invalid data")
+	}
+
+	result, err := srv.repo.GetById(ctx, postId)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (srv *postService) GetList(ctx context.Context, filter filters.Filter) ([]posts.Post, error) {
