@@ -48,7 +48,23 @@ func (srv *postService) GetList(ctx context.Context, filter filters.Filter) ([]p
 }
 
 func (srv *postService) Update(ctx context.Context, postId uint, data posts.Post) error {
-	panic("unimplemented")
+	if postId == 0 {
+		return errors.New("invalid data")
+	}
+
+	if data.Caption == "" {
+		return errors.New("invalid data")
+	}
+
+	if len(data.Attachment) == 0 {
+		return errors.New("invalid data")
+	}
+
+	if err := srv.repo.Update(ctx, postId, data); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (srv *postService) Delete(ctx context.Context, postId uint) error {

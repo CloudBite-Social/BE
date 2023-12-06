@@ -64,7 +64,34 @@ func (repo *postRepository) GetList(ctx context.Context, filter filters.Filter, 
 }
 
 func (repo *postRepository) Update(ctx context.Context, postId uint, data posts.Post) error {
-	panic("unimplemented")
+	for i := 0; i < len(data.Attachment); i++ {
+		UniqueFilename := true
+
+		res, err := repo.cloudinary.Upload.Upload(ctx, data.Attachment[i].Raw, uploader.UploadParams{
+			UniqueFilename: &UniqueFilename,
+			Folder:         "posts",
+		})
+
+		if err != nil {
+			return err
+		}
+
+		data.Attachment[i].URL = res.URL
+	}
+
+	var updateData = new(Post)
+	updateData.FromEntity(data)
+
+	qry := repo.mysqlDB.Model(&Post{Id: postId}).Updates(updateData)
+	if qry.Error != nil {
+		return qry.Error
+	}
+
+	if err := repo.mysqlDB.Model(&Post{Id: postId}).Association("Attachment").Replace(updateData.Attachment); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repo *postRepository) Delete(ctx context.Context, postId uint) error {
