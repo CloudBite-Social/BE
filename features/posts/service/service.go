@@ -43,8 +43,8 @@ func (srv *postService) GetById(ctx context.Context, postId uint) (*posts.Post, 
 	return result, nil
 }
 
-func (srv *postService) GetList(ctx context.Context, filter filters.Filter) ([]posts.Post, int, error) {
-	result, totalData, err := srv.repo.GetList(ctx, filter, nil)
+func (srv *postService) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, int, error) {
+	result, totalData, err := srv.repo.GetList(ctx, filter, userId)
 	if err != nil {
 		return nil, 0, err
 	}

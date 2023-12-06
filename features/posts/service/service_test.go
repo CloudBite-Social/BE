@@ -159,7 +159,7 @@ func TestPostServiceGetList(t *testing.T) {
 		}
 		repo.On("GetList", ctx, caseFilter, (*uint)(nil)).Return(nil, 0, errors.New("some error from repository")).Once()
 
-		result, total, err := srv.GetList(ctx, caseFilter)
+		result, total, err := srv.GetList(ctx, caseFilter, nil)
 
 		assert.ErrorContains(t, err, "some error from repository")
 		assert.Equal(t, 0, total)
@@ -224,7 +224,7 @@ func TestPostServiceGetList(t *testing.T) {
 
 		repo.On("GetList", ctx, caseFilter, (*uint)(nil)).Return(caseResult, caseTotal, nil).Once()
 
-		result, total, err := srv.GetList(ctx, caseFilter)
+		result, total, err := srv.GetList(ctx, caseFilter, nil)
 
 		assert.NoError(t, err)
 		assert.Equal(t, caseTotal, total)
