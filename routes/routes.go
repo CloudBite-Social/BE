@@ -5,6 +5,7 @@ import (
 	"sosmed/features/posts"
 	"sosmed/features/users"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,7 +27,14 @@ func (router *Routes) UserRouter() {
 }
 
 func (router *Routes) PostRouter() {
+	router.Server.GET("/posts", router.PostHandler.GetList())
+	router.Server.POST("/posts", router.PostHandler.Create(), echojwt.JWT([]byte("altamantul")))
+	router.Server.GET("/posts/:id", router.PostHandler.GetById())
+	router.Server.PUT("/posts/:id", router.PostHandler.Update(), echojwt.JWT([]byte("altamantul")))
+	router.Server.DELETE("/posts/:id", router.PostHandler.Delete(), echojwt.JWT([]byte("altamantul")))
 }
 
 func (router *Routes) CommentRouter() {
+	router.Server.POST("/comments", router.CommentHandler.Create(), echojwt.JWT([]byte("altamantul")))
+	router.Server.DELETE("/comments/:id", router.CommentHandler.Delete(), echojwt.JWT([]byte("altamantul")))
 }

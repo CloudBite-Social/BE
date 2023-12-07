@@ -12,7 +12,7 @@ type Comment struct {
 	Id   uint
 	Text string
 
-	PostId int
+	PostId uint
 
 	User users.User
 
