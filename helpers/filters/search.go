@@ -1,5 +1,5 @@
 package filters
 
 type Search struct {
-	Keyword string
+	Keyword string `query:"keyword"`
 }

@@ -149,14 +149,22 @@ func (hdl *postHandler) GetList() echo.HandlerFunc {
 		}
 
 		var paginationResponse = make(map[string]any)
-		if pagination.Start > (pagination.Limit) {
-			paginationResponse["prev"] = fmt.Sprintf("%s/%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Limit-pagination.Start, pagination.Limit)
+		if pagination.Start >= (pagination.Limit) {
+			prev := fmt.Sprintf("%s%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Start-pagination.Limit, pagination.Limit)
+			if search.Keyword != "" {
+				prev += "&keyword=" + search.Keyword
+			}
+			paginationResponse["prev"] = prev
 		} else {
 			paginationResponse["prev"] = nil
 		}
 
-		if totalData > (pagination.Limit*2)+pagination.Start {
-			paginationResponse["next"] = fmt.Sprintf("%s/%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Start+pagination.Limit, pagination.Limit)
+		if totalData > pagination.Start+pagination.Limit {
+			next := fmt.Sprintf("%s%s?start=%d&limit=%d&keyword=%s", baseUrl, c.Path(), pagination.Start+pagination.Limit, pagination.Limit, search.Keyword)
+			if search.Keyword != "" {
+				next += "&keyword=" + search.Keyword
+			}
+			paginationResponse["next"] = next
 		} else {
 			paginationResponse["next"] = nil
 		}
