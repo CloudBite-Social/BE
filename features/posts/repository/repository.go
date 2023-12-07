@@ -78,7 +78,7 @@ func (repo *postRepository) GetList(ctx context.Context, filter filters.Filter, 
 	qry = qry.Preload("User").Preload("Comment").Preload("Attachment")
 	qry = qry.Limit(filter.Pagination.Limit).Offset(filter.Pagination.Start)
 
-	if err := qry.Take(&data).Error; err != nil {
+	if err := qry.Order("id DESC").Find(&data).Error; err != nil {
 		return nil, 0, err
 	}
 
