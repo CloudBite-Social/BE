@@ -222,8 +222,39 @@ func (hdl *userHandler) Delete() echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, response)
 		}
 
-		// TODO need delete post of user
-		// TODO need delete comment of user
+		if err := hdl.postService.DeleteByUserId(c.Request().Context(), userId); err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "user not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		if err := hdl.commetService.DeleteByUserId(c.Request().Context(), userId); err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "user not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
 
 		if err := hdl.userService.Delete(c.Request().Context(), userId); err != nil {
 			c.Logger().Error(err)

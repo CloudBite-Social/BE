@@ -61,7 +61,7 @@ func (repo *commentRepository) DeleteByPostId(ctx context.Context, postId uint) 
 }
 
 func (repo *commentRepository) DeleteByUserId(ctx context.Context, userId uint) error {
-	qry := repo.mysqlDB.WithContext(ctx).Delete(&Comment{UserId: userId})
+	qry := repo.mysqlDB.WithContext(ctx).Where(&Comment{UserId: userId}).Delete(&Comment{})
 	if qry.Error != nil {
 		return qry.Error
 	}
