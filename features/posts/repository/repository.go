@@ -133,3 +133,12 @@ func (repo *postRepository) Delete(ctx context.Context, postId uint) error {
 
 	return nil
 }
+
+func (repo *postRepository) DeleteByUserId(ctx context.Context, userId uint) error {
+	qry := repo.mysqlDB.WithContext(ctx).Delete(&Post{UserId: userId})
+	if qry.Error != nil {
+		return qry.Error
+	}
+
+	return nil
+}
