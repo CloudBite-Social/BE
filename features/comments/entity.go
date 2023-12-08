@@ -30,10 +30,12 @@ type Service interface {
 	Create(ctx context.Context, data Comment) error
 	Delete(ctx context.Context, commentId uint) error
 	DeleteByPostId(ctx context.Context, postId uint) error
+	DeleteByUserId(ctx context.Context, userId uint) error
 }
 
 type Repository interface {
 	Create(ctx context.Context, data Comment) error
 	Delete(ctx context.Context, commentId uint) error
 	DeleteByPostId(ctx context.Context, postId uint) error
+	DeleteByUserId(ctx context.Context, userId uint) error
 }

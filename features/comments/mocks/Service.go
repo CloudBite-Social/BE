@@ -56,6 +56,20 @@ func (_m *Service) DeleteByPostId(ctx context.Context, postId uint) error {
 	return r0
 }
 
+// DeleteByUserId provides a mock function with given fields: ctx, userId
+func (_m *Service) DeleteByUserId(ctx context.Context, userId uint) error {
+	ret := _m.Called(ctx, userId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uint) error); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewService creates a new instance of Service. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewService(t interface {

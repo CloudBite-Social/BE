@@ -59,3 +59,15 @@ func (srv *commentService) DeleteByPostId(ctx context.Context, postId uint) erro
 
 	return nil
 }
+
+func (srv *commentService) DeleteByUserId(ctx context.Context, userId uint) error {
+	if userId == 0 {
+		return errors.New("validate: invalid user id")
+	}
+
+	if err := srv.repo.DeleteByUserId(ctx, userId); err != nil {
+		return err
+	}
+
+	return nil
+}

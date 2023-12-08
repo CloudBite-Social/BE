@@ -57,8 +57,13 @@ func (repo *commentRepository) DeleteByPostId(ctx context.Context, postId uint) 
 		return qry.Error
 	}
 
-	if qry.RowsAffected == 0 {
-		return errors.New("data not found")
+	return nil
+}
+
+func (repo *commentRepository) DeleteByUserId(ctx context.Context, userId uint) error {
+	qry := repo.mysqlDB.WithContext(ctx).Delete(&Comment{UserId: userId})
+	if qry.Error != nil {
+		return qry.Error
 	}
 
 	return nil
