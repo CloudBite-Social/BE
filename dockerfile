@@ -3,6 +3,6 @@ FROM golang:1.21.4-alpine
 COPY . /app
 WORKDIR /app
 RUN go mod tidy
-RUN go build -o coupon .
+RUN go build -o sosmed .
 
-CMD [ "/app/coupon" ]
+CMD [ "/app/sosmed" ]
