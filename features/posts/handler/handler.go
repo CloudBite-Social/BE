@@ -237,7 +237,22 @@ func (hdl *postHandler) Delete() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, response)
 		}
 
-		// TODO need delete comment post
+		if err := hdl.commentService.DeleteByPostId(c.Request().Context(), uint(postId)); err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "user not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
 
 		if err := hdl.service.Delete(c.Request().Context(), uint(postId)); err != nil {
 			c.Logger().Error(err)
