@@ -25,7 +25,7 @@ func TestCommentServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("invalid post id", func(t *testing.T) {
@@ -37,7 +37,7 @@ func TestCommentServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("invalid comment text", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestCommentServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -91,7 +91,7 @@ func TestCommentServiceDelete(t *testing.T) {
 	t.Run("invalid comment id", func(t *testing.T) {
 		err := srv.Delete(ctx, 0)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -108,6 +108,70 @@ func TestCommentServiceDelete(t *testing.T) {
 		repo.On("Delete", ctx, uint(1)).Return(nil).Once()
 
 		err := srv.Delete(ctx, 1)
+
+		assert.NoError(t, err)
+
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestCommentServiceDeleteByPostId(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var srv = NewCommentService(repo)
+	var ctx = context.Background()
+
+	t.Run("invalid post id", func(t *testing.T) {
+		err := srv.DeleteByPostId(ctx, 0)
+
+		assert.ErrorContains(t, err, "validate")
+	})
+
+	t.Run("repository error", func(t *testing.T) {
+		repo.On("DeleteByPostId", ctx, uint(1)).Return(errors.New("some error from repository")).Once()
+
+		err := srv.DeleteByPostId(ctx, 1)
+
+		assert.ErrorContains(t, err, "some error from repository")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		repo.On("DeleteByPostId", ctx, uint(1)).Return(nil).Once()
+
+		err := srv.DeleteByPostId(ctx, 1)
+
+		assert.NoError(t, err)
+
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestCommentServiceDeleteByUserId(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var srv = NewCommentService(repo)
+	var ctx = context.Background()
+
+	t.Run("invalid post id", func(t *testing.T) {
+		err := srv.DeleteByUserId(ctx, 0)
+
+		assert.ErrorContains(t, err, "validate")
+	})
+
+	t.Run("repository error", func(t *testing.T) {
+		repo.On("DeleteByUserId", ctx, uint(1)).Return(errors.New("some error from repository")).Once()
+
+		err := srv.DeleteByUserId(ctx, 1)
+
+		assert.ErrorContains(t, err, "some error from repository")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		repo.On("DeleteByUserId", ctx, uint(1)).Return(nil).Once()
+
+		err := srv.DeleteByUserId(ctx, 1)
 
 		assert.NoError(t, err)
 

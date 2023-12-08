@@ -59,7 +59,7 @@ func main() {
 
 	userRepository := ur.NewUserRepository(dbConnection, cld)
 	userService := us.NewUserService(userRepository, enc)
-	userHandler := uh.NewUserHandler(userService, postService)
+	userHandler := uh.NewUserHandler(userService, postService, commentService)
 
 	app := echo.New()
 
