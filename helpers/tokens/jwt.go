@@ -8,6 +8,10 @@ import (
 )
 
 func GenerateJWT(idUser uint) (string, error) {
+	if idUser == 0 {
+		return "", errors.New("invalid user id")
+	}
+
 	var claim = jwt.MapClaims{}
 	claim["id"] = idUser
 	claim["iat"] = time.Now().UnixMilli()
