@@ -49,13 +49,13 @@ func main() {
 
 	enc := encrypt.NewBcrypt(10)
 
-	postRepository := pr.NewPostRepository(dbConnection, cld)
-	postService := ps.NewPostService(postRepository)
-	postHandler := ph.NewPostHandler(postService)
-
 	commentRepository := cr.NewCommentRepository(dbConnection)
 	commentService := cs.NewCommentService(commentRepository)
 	commentHandler := ch.NewCommentHandler(commentService)
+
+	postRepository := pr.NewPostRepository(dbConnection, cld)
+	postService := ps.NewPostService(postRepository)
+	postHandler := ph.NewPostHandler(postService, commentService)
 
 	userRepository := ur.NewUserRepository(dbConnection, cld)
 	userService := us.NewUserService(userRepository, enc)

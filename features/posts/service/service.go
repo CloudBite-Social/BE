@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"reflect"
 	"sosmed/features/posts"
 	"sosmed/helpers/filters"
 )
@@ -19,8 +18,8 @@ type postService struct {
 }
 
 func (srv *postService) Create(ctx context.Context, data posts.Post) error {
-	if reflect.ValueOf(data).IsZero() {
-		return errors.New("invalid data")
+	if data.Caption == "" && len(data.Attachment) == 0 {
+		return errors.New("validate: please fill image or caption")
 	}
 
 	if err := srv.repo.Create(ctx, data); err != nil {
@@ -32,7 +31,7 @@ func (srv *postService) Create(ctx context.Context, data posts.Post) error {
 
 func (srv *postService) GetById(ctx context.Context, postId uint) (*posts.Post, error) {
 	if postId == 0 {
-		return nil, errors.New("invalid data")
+		return nil, errors.New("validate: invalid post id")
 	}
 
 	result, err := srv.repo.GetById(ctx, postId)
@@ -54,15 +53,11 @@ func (srv *postService) GetList(ctx context.Context, filter filters.Filter, user
 
 func (srv *postService) Update(ctx context.Context, postId uint, data posts.Post) error {
 	if postId == 0 {
-		return errors.New("invalid data")
+		return errors.New("validate: invalid post id")
 	}
 
-	if data.Caption == "" {
-		return errors.New("invalid data")
-	}
-
-	if len(data.Attachment) == 0 {
-		return errors.New("invalid data")
+	if data.Caption == "" && len(data.Attachment) == 0 {
+		return errors.New("validate: please fill image or caption")
 	}
 
 	if err := srv.repo.Update(ctx, postId, data); err != nil {
@@ -74,10 +69,22 @@ func (srv *postService) Update(ctx context.Context, postId uint, data posts.Post
 
 func (srv *postService) Delete(ctx context.Context, postId uint) error {
 	if postId == 0 {
-		return errors.New("invalid data")
+		return errors.New("validate: invalid post id")
 	}
 
 	if err := srv.repo.Delete(ctx, postId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (srv *postService) DeleteByUserId(ctx context.Context, userId uint) error {
+	if userId == 0 {
+		return errors.New("validate: invalid post id")
+	}
+
+	if err := srv.repo.DeleteByUserId(ctx, userId); err != nil {
 		return err
 	}
 

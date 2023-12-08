@@ -44,6 +44,20 @@ func (_m *Repository) Delete(ctx context.Context, postId uint) error {
 	return r0
 }
 
+// DeleteByUserId provides a mock function with given fields: ctx, userId
+func (_m *Repository) DeleteByUserId(ctx context.Context, userId uint) error {
+	ret := _m.Called(ctx, userId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uint) error); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetById provides a mock function with given fields: ctx, postId
 func (_m *Repository) GetById(ctx context.Context, postId uint) (*posts.Post, error) {
 	ret := _m.Called(ctx, postId)
