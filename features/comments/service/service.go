@@ -18,15 +18,15 @@ type commentService struct {
 
 func (srv *commentService) Create(ctx context.Context, data comments.Comment) error {
 	if data.User.Id == 0 {
-		return errors.New("invalid data")
+		return errors.New("validate: invalid user id")
 	}
 
 	if data.PostId == 0 {
-		return errors.New("invalid data")
+		return errors.New("validate: invalid post id")
 	}
 
 	if data.Text == "" {
-		return errors.New("invalid data")
+		return errors.New("validate: invalid text comment")
 	}
 
 	if err := srv.repo.Create(ctx, data); err != nil {

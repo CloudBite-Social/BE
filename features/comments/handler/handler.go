@@ -37,7 +37,7 @@ func (hdl *commentHandler) Create() echo.HandlerFunc {
 		if err := c.Bind(&request); err != nil {
 			c.Logger().Error(err)
 
-			response["message"] = "bad request"
+			response["message"] = "please fill input correctly"
 			return c.JSON(http.StatusBadRequest, response)
 		}
 		data := request.ToEntity(userID)
@@ -45,9 +45,14 @@ func (hdl *commentHandler) Create() echo.HandlerFunc {
 		if err := hdl.service.Create(c.Request().Context(), *data); err != nil {
 			c.Logger().Error(err)
 
-			if strings.Contains(err.Error(), "invalid data") {
-				response["message"] = "bad request"
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
 				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = err.Error()
+				return c.JSON(http.StatusNotFound, response)
 			}
 
 			response["message"] = "internal server error"

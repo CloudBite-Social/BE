@@ -25,7 +25,7 @@ func TestCommentServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("invalid post id", func(t *testing.T) {
@@ -37,7 +37,7 @@ func TestCommentServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("invalid comment text", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestCommentServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
