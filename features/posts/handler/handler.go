@@ -79,7 +79,7 @@ func (hdl *postHandler) GetById() echo.HandlerFunc {
 		if err != nil {
 			c.Logger().Error(err)
 
-			response["message"] = "bad request"
+			response["message"] = "invalid post id"
 			return c.JSON(http.StatusBadRequest, response)
 		}
 
@@ -87,13 +87,13 @@ func (hdl *postHandler) GetById() echo.HandlerFunc {
 		if err != nil {
 			c.Logger().Error(err)
 
-			if strings.Contains(err.Error(), "invalid data") {
-				response["message"] = "bad request"
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
 				return c.JSON(http.StatusBadRequest, response)
 			}
 
 			if strings.Contains(err.Error(), "not found") {
-				response["message"] = "not found"
+				response["message"] = "post not found"
 				return c.JSON(http.StatusNotFound, response)
 			}
 

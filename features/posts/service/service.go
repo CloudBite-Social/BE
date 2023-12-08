@@ -31,7 +31,7 @@ func (srv *postService) Create(ctx context.Context, data posts.Post) error {
 
 func (srv *postService) GetById(ctx context.Context, postId uint) (*posts.Post, error) {
 	if postId == 0 {
-		return nil, errors.New("invalid data")
+		return nil, errors.New("validate: invalid post id")
 	}
 
 	result, err := srv.repo.GetById(ctx, postId)

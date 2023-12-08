@@ -9,9 +9,9 @@ import (
 )
 
 type PostResponse struct {
-	Id      uint   `json:"post_id,omitempty"`
-	Caption string `json:"caption,omitempty"`
-	Image   string `json:"image,omitempty"`
+	Id      uint    `json:"post_id,omitempty"`
+	Caption string  `json:"caption,omitempty"`
+	Image   *string `json:"image"`
 
 	User PostUserResponse `json:"user,omitempty"`
 
@@ -31,7 +31,7 @@ func (res *PostResponse) FromEntity(ent posts.Post, onlyCommentCount bool) {
 	}
 
 	if len(ent.Attachment) > 0 {
-		res.Image = ent.Attachment[0].URL
+		res.Image = &ent.Attachment[0].URL
 	}
 
 	if !reflect.ValueOf(ent.User).IsZero() {

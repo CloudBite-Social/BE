@@ -64,7 +64,7 @@ func TestPostServiceGetById(t *testing.T) {
 	t.Run("invalid id", func(t *testing.T) {
 		result, err := srv.GetById(ctx, 0)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 		assert.Nil(t, result)
 	})
 
