@@ -114,8 +114,10 @@ func (repo *postRepository) Update(ctx context.Context, postId uint, data posts.
 		return qry.Error
 	}
 
-	if err := repo.mysqlDB.Model(&Post{Id: postId}).Association("Attachment").Replace(updateData.Attachment); err != nil {
-		return err
+	if len(data.Attachment) != 0 {
+		if err := repo.mysqlDB.Model(&Post{Id: postId}).Association("Attachment").Replace(updateData.Attachment); err != nil {
+			return err
+		}
 	}
 
 	return nil
