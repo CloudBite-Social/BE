@@ -152,7 +152,7 @@ func (hdl *postHandler) GetList() echo.HandlerFunc {
 		}
 
 		if totalData > pagination.Start+pagination.Limit {
-			next := fmt.Sprintf("%s%s?start=%d&limit=%d&keyword=%s", baseUrl, c.Path(), pagination.Start+pagination.Limit, pagination.Limit, search.Keyword)
+			next := fmt.Sprintf("%s%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Start+pagination.Limit, pagination.Limit)
 			if search.Keyword != "" {
 				next += "&keyword=" + search.Keyword
 			}
