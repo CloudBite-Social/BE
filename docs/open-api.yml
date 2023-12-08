@@ -1,0 +1,716 @@
+openapi: 3.0.0
+info:
+  description: simple sosmed api
+  version: "1.0.0"
+  title: Sosmed API
+  contact:
+    email: herusetiawan@mail.com
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/HERUSETIAWAN_1/sosmed/1.0.0
+paths:
+  /login:
+    post:
+      tags:
+        - "Auth"
+      summary: "login"
+      requestBody:
+        $ref: "#/components/requestBodies/login"          
+      responses:
+        "200":
+          description: "login success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "login success"
+                data: 
+                  user_id: 1
+                  name: "kijang 1"
+                  email: "kijang1@mail.com"
+                  image: "https://placehold.co/400x400/png"
+                  created_at: "2023-12-05T06:57:29.370Z"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTE2MjM5MDIyfQ.REZ7ITsosQXYkAKr9WssjuOniMhtP3OSkWpNLwBt8jo"
+        "400":
+          $ref: "#/components/responses/400"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+  /register:
+    post:
+      tags:
+        - "Auth"
+      summary: "register"
+      requestBody:
+        $ref: "#/components/requestBodies/register"          
+      responses:
+        "201":
+          description: "register success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "register success"
+        "400":
+          $ref: "#/components/responses/400"
+        "405":
+          $ref: "#/components/responses/405"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /users:
+    get:
+      tags:
+        - "User"
+      summary: "get detail user"
+      security:
+        - token: []
+      responses:
+        "200":
+          description: "success get detail of user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "get detail of user success"
+                data: 
+                  user_id: 1
+                  name: "kijang 1"
+                  email: "kijang1@mail.com"
+                  image: "https://placehold.co/400x400/png"
+                  created_at: "2023-12-05T06:57:29.370Z"
+                  posts:
+                    - post_id: 1
+                      caption: "post caption 1"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 5
+                    - post_id: 2
+                      caption: "post caption 2"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 2
+                    - post_id: 3
+                      caption: "post caption 3"
+                      image: 
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 0
+                    - post_id: 4
+                      caption: "post caption 4"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 4
+                    - post_id: 5
+                      caption: "post caption 5"
+                      image: "https://placehold.co/800x400/png"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      comment_count: 1
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+    patch:
+      tags:
+        - "User"
+      summary: "update user"
+      requestBody:
+        $ref: "#/components/requestBodies/userUpdate"
+      security:
+        - token: []
+      responses:
+        "200":
+          description: "success update user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "update user success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - "User"
+      summary: "delete user"
+      security:
+        - token: []
+      responses:
+        "200":
+          description: "success delete user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "delete user success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+  
+  /posts:
+    get:
+      tags:
+        - "Post"
+      summary: "get list post"
+      parameters:
+        - in: query
+          name: start
+          required: false
+          schema:
+            type: integer
+            default: 0
+          example: 0
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 5
+          example: 5
+        - in: query
+          name: keyword
+          required: false
+          schema:
+            type: string
+            default: 
+          example: "post"
+      responses:
+        "200":
+          description: "success get list post"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "get list post success"
+                pagination:
+                  prev:
+                  next: "https://virtserver.swaggerhub.com/HERUSETIAWAN_1/sosmed/1.0.0/posts?start=6&limit=5"
+                data: 
+                  - post_id: 1
+                    caption: "post caption 1"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
+                    comment_count: 5
+                    user: 
+                      user_id: 1
+                      name: "kijang 1"
+                      image: "https://placehold.co/400x400/png"
+                  - post_id: 2
+                    caption: "post caption 2"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
+                    comment_count: 2
+                    user: 
+                      user_id: 1
+                      name: "kijang 1"
+                      image: "https://placehold.co/400x400/png"
+                  - post_id: 3
+                    caption: "post caption 3"
+                    image: 
+                    created_at: "2023-12-05T06:57:29.370Z"
+                    comment_count: 0
+                    user: 
+                      user_id: 2
+                      name: "kijang 2"
+                      image: "https://placehold.co/400x400/png"
+                  - post_id: 4
+                    caption: "post caption 4"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
+                    comment_count: 4
+                    user: 
+                      user_id: 2
+                      name: "kijang 2"
+                      image: "https://placehold.co/400x400/png"
+                  - post_id: 5
+                    caption: "post caption 5"
+                    image: "https://placehold.co/800x400/png"
+                    created_at: "2023-12-05T06:57:29.370Z"
+                    comment_count: 1
+                    user: 
+                      user_id: 2
+                      name: "kijang 2"
+                      image: "https://placehold.co/400x400/png"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - "Post"
+      summary: "create post"
+      requestBody:
+        $ref: "#/components/requestBodies/postCreate"
+      security:
+        - token: []
+      responses:
+        "201":
+          description: "success create post"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "create post success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+  /posts/{id}:
+    get:
+      tags:
+        - "Post"
+      summary: "get detail post"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        "200":
+          description: "success get detail post"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "get detail post success"
+                data: 
+                  post_id: 1
+                  caption: "post caption 1"
+                  image: "https://placehold.co/800x400/png"
+                  created_at: "2023-12-05T06:57:29.370Z"
+                  user: 
+                    user_id: 1
+                    name: "kijang 1"
+                    image: "https://placehold.co/400x400/png"
+                  comment:
+                    - comment_id: 1
+                      text: "example comment 1"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      user:
+                        user_id: 2
+                        name: "kijang 2"
+                        image: "https://placehold.co/400x400/png"
+                    - comment_id: 2
+                      text: "example comment 2"
+                      created_at: "2023-12-05T06:57:29.370Z"
+                      user:
+                        user_id: 1
+                        name: "kijang 1"
+                        image: "https://placehold.co/400x400/png"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - "Post"
+      summary: "update post"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        $ref: "#/components/requestBodies/postUpdate"
+      security:
+        - token: [] 
+      responses:
+        "200":
+          description: "success update post"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "update post success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - "Post"
+      summary: "delete post"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      security:
+        - token: []
+      responses:
+        "200":
+          description: "success delete post"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "delete post success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /comments:
+    post:
+      tags:
+        - "Comment"
+      summary: "create comment"
+      requestBody:
+        $ref: "#/components/requestBodies/commentCreate"
+      security:
+        - token: []
+      responses:
+        "201":
+          description: "success create comment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "create comment success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+  /comments/{id}:
+    delete:
+      tags:
+        - "Comment"
+      summary: "delete comment"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      security:
+        - token: []
+      responses:
+        "200":
+          description: "success delete comment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/defaultResponse"
+              example:
+                message: "delete comment success"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "405":
+          $ref: "#/components/responses/405"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        image:
+          type: string
+    post:
+      type: object
+      properties:
+        id:
+          type: integer
+        caption:
+          type: string
+        image:
+          type: string
+        user:
+          $ref: "#/components/schemas/user"
+        comment_count: 
+          type: integer
+        comment:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/comment"
+    comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        user:
+          $ref: "#/components/schemas/user"
+
+    defaultResponse:
+      type: object
+      properties:
+        data:
+          oneOf:
+            - type: array
+              items:
+                type: object
+                nullable: true
+                oneOf:
+                  - $ref: "#/components/schemas/user"
+                  - $ref: "#/components/schemas/post"
+                  - $ref: "#/components/schemas/comment"
+            - type: object
+              nullable: true
+              oneOf:
+                - $ref: "#/components/schemas/user"
+                - $ref: "#/components/schemas/post"
+                - $ref: "#/components/schemas/comment"
+        message:
+          type: string
+        pagination:
+          type: object
+          properties:
+            prev:
+              type: string
+            next: 
+              type: string
+        token:
+          type: string
+
+    loginRequest:
+      type: object
+      required:
+        - "email"
+        - "password"
+      properties:
+        email:
+          type: string
+          example: "kijang1@mail.com"
+        password:
+          type: string
+          example: "secret"
+    registerRequest:
+      type: object
+      required:
+        - "name"
+        - "email"
+        - "password"
+      properties:
+        name:
+          type: string
+          example: "kijang 1"
+        email:
+          type: string
+          example: "kijang1@mail.com"
+        password:
+          type: string
+          example: "secret"
+    userUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "kijang1"
+        email:
+          type: string
+          example: "kijang1@mail.com"
+        password:
+          type: string
+          example: "kijang1"
+        image:
+          type: string
+          format: binary
+    
+    postCreateRequest:
+      type: object
+      properties:
+        caption:
+          type: string
+          example: "example post 1"
+        image:
+          type: string
+          format: binary
+    postUpdateRequest:
+      type: object
+      properties:
+        caption:
+          type: string
+        image:
+          type: string
+          format: binary
+    
+    commentCreateRequest:
+      type: object
+      required:
+        - "post_id"
+        - "text"
+      properties:
+        post_id:
+          type: integer
+          example: 1
+        text:
+          type: string
+          example: "example comment 1"
+
+  securitySchemes:
+    token:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  requestBodies:
+    login:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/loginRequest"
+    register:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/registerRequest"
+    userUpdate:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/userUpdateRequest"
+    
+    postCreate:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/postCreateRequest"
+    postUpdate:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/postUpdateRequest"
+
+    commentCreate:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/commentCreateRequest"
+     
+  responses:
+    "400":
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/defaultResponse"
+          example:
+            message: "bad request"
+    "401":
+      description: "unauthorized"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/defaultResponse"
+          example:
+            message: "unauthorized"
+    "404":
+      description: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/defaultResponse"
+          example:
+            message: "not found"
+    "405":
+      description: "method not allowed"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/defaultResponse"
+          example:
+            message: "method not allowed"
+    "409":
+      description: "conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/defaultResponse"
+          example:
+            message: "conflict"
+    "500":
+      description: "internal server error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/defaultResponse"
+          example:
+            message: "internal server error"
