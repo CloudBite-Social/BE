@@ -91,7 +91,7 @@ func TestCommentServiceDelete(t *testing.T) {
 	t.Run("invalid comment id", func(t *testing.T) {
 		err := srv.Delete(ctx, 0)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
