@@ -44,6 +44,20 @@ func (_m *Service) Delete(ctx context.Context, postId uint) error {
 	return r0
 }
 
+// DeleteByUserId provides a mock function with given fields: ctx, userId
+func (_m *Service) DeleteByUserId(ctx context.Context, userId uint) error {
+	ret := _m.Called(ctx, userId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uint) error); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetById provides a mock function with given fields: ctx, postId
 func (_m *Service) GetById(ctx context.Context, postId uint) (*posts.Post, error) {
 	ret := _m.Called(ctx, postId)
@@ -70,32 +84,32 @@ func (_m *Service) GetById(ctx context.Context, postId uint) (*posts.Post, error
 	return r0, r1
 }
 
-// GetList provides a mock function with given fields: ctx, filter
-func (_m *Service) GetList(ctx context.Context, filter filters.Filter) ([]posts.Post, int, error) {
-	ret := _m.Called(ctx, filter)
+// GetList provides a mock function with given fields: ctx, filter, userId
+func (_m *Service) GetList(ctx context.Context, filter filters.Filter, userId *uint) ([]posts.Post, int, error) {
+	ret := _m.Called(ctx, filter, userId)
 
 	var r0 []posts.Post
 	var r1 int
 	var r2 error
-	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter) ([]posts.Post, int, error)); ok {
-		return rf(ctx, filter)
+	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter, *uint) ([]posts.Post, int, error)); ok {
+		return rf(ctx, filter, userId)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter) []posts.Post); ok {
-		r0 = rf(ctx, filter)
+	if rf, ok := ret.Get(0).(func(context.Context, filters.Filter, *uint) []posts.Post); ok {
+		r0 = rf(ctx, filter, userId)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]posts.Post)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, filters.Filter) int); ok {
-		r1 = rf(ctx, filter)
+	if rf, ok := ret.Get(1).(func(context.Context, filters.Filter, *uint) int); ok {
+		r1 = rf(ctx, filter, userId)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
-	if rf, ok := ret.Get(2).(func(context.Context, filters.Filter) error); ok {
-		r2 = rf(ctx, filter)
+	if rf, ok := ret.Get(2).(func(context.Context, filters.Filter, *uint) error); ok {
+		r2 = rf(ctx, filter, userId)
 	} else {
 		r2 = ret.Error(2)
 	}

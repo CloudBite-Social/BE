@@ -50,6 +50,7 @@ type Service interface {
 	Create(ctx context.Context, data Post) error
 	Update(ctx context.Context, postId uint, data Post) error
 	Delete(ctx context.Context, postId uint) error
+	DeleteByUserId(ctx context.Context, userId uint) error
 }
 
 type Repository interface {
@@ -58,4 +59,5 @@ type Repository interface {
 	Create(ctx context.Context, data Post) error
 	Update(ctx context.Context, postId uint, data Post) error
 	Delete(ctx context.Context, postId uint) error
+	DeleteByUserId(ctx context.Context, userId uint) error
 }

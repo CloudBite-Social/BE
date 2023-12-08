@@ -24,7 +24,7 @@ func TestPostServiceCreate(t *testing.T) {
 
 		err := srv.Create(ctx, caseInput)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -64,7 +64,7 @@ func TestPostServiceGetById(t *testing.T) {
 	t.Run("invalid id", func(t *testing.T) {
 		result, err := srv.GetById(ctx, 0)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 		assert.Nil(t, result)
 	})
 
@@ -243,26 +243,17 @@ func TestPostServiceUpdate(t *testing.T) {
 		var caseData = posts.Post{}
 		err := srv.Update(ctx, 0, caseData)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
-	t.Run("invalid caption", func(t *testing.T) {
+	t.Run("invalid caption and file attachment", func(t *testing.T) {
 		var caseData = posts.Post{
-			Caption: "",
-		}
-		err := srv.Update(ctx, 1, caseData)
-
-		assert.ErrorContains(t, err, "invalid data")
-	})
-
-	t.Run("invalid file attachment", func(t *testing.T) {
-		var caseData = posts.Post{
-			Caption:    "example post 1",
+			Caption:    "",
 			Attachment: []posts.File{},
 		}
 		err := srv.Update(ctx, 1, caseData)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -329,7 +320,7 @@ func TestPostServiceDelete(t *testing.T) {
 	t.Run("invalid id", func(t *testing.T) {
 		err := srv.Delete(ctx, 0)
 
-		assert.ErrorContains(t, err, "invalid data")
+		assert.ErrorContains(t, err, "validate")
 	})
 
 	t.Run("repository error", func(t *testing.T) {
@@ -356,6 +347,48 @@ func TestPostServiceDelete(t *testing.T) {
 		repo.On("Delete", ctx, uint(1)).Return(nil).Once()
 
 		err := srv.Delete(ctx, 1)
+
+		assert.NoError(t, err)
+
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestPostServiceDeleteByUserId(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var srv = NewPostService(repo)
+	var ctx = context.Background()
+
+	t.Run("invalid id", func(t *testing.T) {
+		err := srv.DeleteByUserId(ctx, 0)
+
+		assert.ErrorContains(t, err, "validate")
+	})
+
+	t.Run("repository error", func(t *testing.T) {
+		repo.On("DeleteByUserId", ctx, uint(1)).Return(errors.New("some error from repository")).Once()
+
+		err := srv.DeleteByUserId(ctx, 1)
+
+		assert.ErrorContains(t, err, "some error from repository")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("data not found", func(t *testing.T) {
+		repo.On("DeleteByUserId", ctx, uint(1)).Return(errors.New("data not found")).Once()
+
+		err := srv.DeleteByUserId(ctx, 1)
+
+		assert.ErrorContains(t, err, "data not found")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		repo.On("DeleteByUserId", ctx, uint(1)).Return(nil).Once()
+
+		err := srv.DeleteByUserId(ctx, 1)
 
 		assert.NoError(t, err)
 

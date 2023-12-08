@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sosmed/features/comments"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -23,6 +24,14 @@ func (repo *commentRepository) Create(ctx context.Context, data comments.Comment
 	mod.FromEntity(data)
 
 	if err := repo.mysqlDB.WithContext(ctx).Create(mod).Error; err != nil {
+		if strings.Contains(err.Error(), "post_id") {
+			return errors.New("post not found")
+		}
+
+		if strings.Contains(err.Error(), "user_id") {
+			return errors.New("user not found")
+		}
+
 		return err
 	}
 
@@ -40,6 +49,22 @@ func (repo *commentRepository) Delete(ctx context.Context, commentId uint) error
 	}
 
 	return nil
+}
+
+func (repo *commentRepository) DeleteByPostId(ctx context.Context, postId uint) error {
+	qry := repo.mysqlDB.WithContext(ctx).Where(&Comment{PostId: postId}).Delete(&Comment{})
+	if qry.Error != nil {
+		return qry.Error
+	}
+
+	return nil
+}
+
+func (repo *commentRepository) DeleteByUserId(ctx context.Context, userId uint) error {
+	qry := repo.mysqlDB.WithContext(ctx).Where(&Comment{UserId: userId}).Delete(&Comment{})
+	if qry.Error != nil {
+		return qry.Error
+	}
 
 	return nil
 }
