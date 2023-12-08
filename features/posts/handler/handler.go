@@ -37,36 +37,28 @@ func (hdl *postHandler) Create() echo.HandlerFunc {
 		}
 
 		request.Caption = c.FormValue("caption")
+		if form, err := c.MultipartForm(); err == nil {
+			files := form.File["image"]
+			for _, file := range files {
+				src, err := file.Open()
+				if err != nil {
+					c.Logger().Error(err)
 
-		form, err := c.MultipartForm()
-		if err != nil {
-			c.Logger().Error(err)
+					response["message"] = "invalid image input"
+					return c.JSON(http.StatusBadRequest, response)
+				}
+				defer src.Close()
 
-			response["message"] = "bad request"
-			return c.JSON(http.StatusBadRequest, response)
-		}
-		files := form.File["image"]
-
-		for _, file := range files {
-			src, err := file.Open()
-			if err != nil {
-				c.Logger().Error(err)
-
-				response["message"] = "bad request"
-				return c.JSON(http.StatusBadRequest, response)
+				request.Files = append(request.Files, src)
 			}
-			defer src.Close()
-
-			request.Files = append(request.Files, src)
 		}
 
 		data := request.ToEntity(userID)
-
 		if err := hdl.service.Create(c.Request().Context(), *data); err != nil {
 			c.Logger().Error(err)
 
-			if strings.Contains(err.Error(), "invalid data") {
-				response["message"] = "bad request"
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
 				return c.JSON(http.StatusBadRequest, response)
 			}
 

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"reflect"
 	"sosmed/features/posts"
 	"sosmed/helpers/filters"
 )
@@ -19,8 +18,8 @@ type postService struct {
 }
 
 func (srv *postService) Create(ctx context.Context, data posts.Post) error {
-	if reflect.ValueOf(data).IsZero() {
-		return errors.New("invalid data")
+	if data.Caption == "" && len(data.Attachment) == 0 {
+		return errors.New("validate: please fill image or caption")
 	}
 
 	if err := srv.repo.Create(ctx, data); err != nil {
