@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"sosmed/features/users"
 	"time"
 
 	"gorm.io/gorm"
@@ -16,4 +17,22 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+func (mod *User) FromEntity(ent users.User) {
+	if ent.Name != "" {
+		mod.Name = ent.Name
+	}
+
+	if ent.Email != "" {
+		mod.Email = ent.Email
+	}
+
+	if ent.Password != "" {
+		mod.Password = ent.Password
+	}
+
+	if ent.Image != "" {
+		mod.Image = ent.Image
+	}
 }

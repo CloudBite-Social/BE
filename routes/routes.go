@@ -24,6 +24,7 @@ func (router Routes) InitRouter() {
 }
 
 func (router *Routes) UserRouter() {
+	router.Server.POST("/register", router.UserHandler.Register())
 }
 
 func (router *Routes) PostRouter() {

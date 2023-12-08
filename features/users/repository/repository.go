@@ -21,7 +21,14 @@ type userRepository struct {
 }
 
 func (repo *userRepository) Register(ctx context.Context, data users.User) error {
-	panic("unimplemented")
+	var mod = new(User)
+	mod.FromEntity(data)
+
+	if err := repo.mysqlDB.WithContext(ctx).Create(mod).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repo *userRepository) Login(ctx context.Context, email string) (*users.User, error) {

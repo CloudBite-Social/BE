@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"sosmed/features/users"
 	"sosmed/helpers/encrypt"
 )
@@ -19,7 +20,30 @@ type userService struct {
 }
 
 func (srv *userService) Register(ctx context.Context, data users.User) error {
-	panic("unimplemented")
+	if data.Name == "" {
+		return errors.New("validate: name can't empty")
+	}
+
+	if data.Email == "" {
+		return errors.New("validate: email can't empty")
+	}
+
+	if data.Password == "" {
+		return errors.New("validate: password can't empty")
+	}
+
+	hash, err := srv.enc.Hash(data.Password)
+	if err != nil {
+		return err
+	}
+
+	data.Password = hash
+
+	if err := srv.repo.Register(ctx, data); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (srv *userService) Login(ctx context.Context, data users.User) (*users.User, *string, error) {
