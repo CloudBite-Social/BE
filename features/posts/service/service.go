@@ -53,15 +53,11 @@ func (srv *postService) GetList(ctx context.Context, filter filters.Filter, user
 
 func (srv *postService) Update(ctx context.Context, postId uint, data posts.Post) error {
 	if postId == 0 {
-		return errors.New("invalid data")
+		return errors.New("validate: invalid post id")
 	}
 
-	if data.Caption == "" {
-		return errors.New("invalid data")
-	}
-
-	if len(data.Attachment) == 0 {
-		return errors.New("invalid data")
+	if data.Caption == "" && len(data.Attachment) == 0 {
+		return errors.New("validate: please fill image or caption")
 	}
 
 	if err := srv.repo.Update(ctx, postId, data); err != nil {

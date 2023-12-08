@@ -177,32 +177,25 @@ func (hdl *postHandler) Update() echo.HandlerFunc {
 		if err != nil {
 			c.Logger().Error(err)
 
-			response["message"] = "bad request"
+			response["message"] = "invalid post id"
 			return c.JSON(http.StatusBadRequest, response)
 		}
 
 		request.Caption = c.FormValue("caption")
+		if form, err := c.MultipartForm(); err == nil {
+			files := form.File["image"]
+			for _, file := range files {
+				src, err := file.Open()
+				if err != nil {
+					c.Logger().Error(err)
 
-		form, err := c.MultipartForm()
-		if err != nil {
-			c.Logger().Error(err)
+					response["message"] = "invalid image input"
+					return c.JSON(http.StatusBadRequest, response)
+				}
+				defer src.Close()
 
-			response["message"] = "bad request"
-			return c.JSON(http.StatusBadRequest, response)
-		}
-		files := form.File["image"]
-
-		for _, file := range files {
-			src, err := file.Open()
-			if err != nil {
-				c.Logger().Error(err)
-
-				response["message"] = "bad request"
-				return c.JSON(http.StatusBadRequest, response)
+				request.Files = append(request.Files, src)
 			}
-			defer src.Close()
-
-			request.Files = append(request.Files, src)
 		}
 
 		data := request.ToEntity(0)
@@ -210,13 +203,13 @@ func (hdl *postHandler) Update() echo.HandlerFunc {
 		if err := hdl.service.Update(c.Request().Context(), uint(postId), *data); err != nil {
 			c.Logger().Error(err)
 
-			if strings.Contains(err.Error(), "invalid data") {
-				response["message"] = "bad request"
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
 				return c.JSON(http.StatusBadRequest, response)
 			}
 
 			if strings.Contains(err.Error(), "not found") {
-				response["message"] = "not found"
+				response["message"] = "post not found"
 				return c.JSON(http.StatusNotFound, response)
 			}
 
