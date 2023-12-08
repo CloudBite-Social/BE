@@ -20,6 +20,7 @@ import (
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -62,6 +63,8 @@ func main() {
 	userHandler := uh.NewUserHandler(userService, postService, commentService)
 
 	app := echo.New()
+	app.Use(middleware.Recover())
+	app.Use(middleware.CORS())
 
 	route := routes.Routes{
 		Server:         app,
