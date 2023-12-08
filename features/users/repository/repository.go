@@ -5,6 +5,7 @@ import (
 	"sosmed/features/users"
 
 	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"gorm.io/gorm"
 )
 
@@ -46,7 +47,28 @@ func (repo *userRepository) GetById(ctx context.Context, id uint) (*users.User, 
 }
 
 func (repo *userRepository) Update(ctx context.Context, id uint, data users.User) error {
-	panic("unimplemented")
+	if data.RawImage != nil {
+		UniqueFilename := true
+		res, err := repo.cloudinary.Upload.Upload(ctx, data.RawImage, uploader.UploadParams{
+			UniqueFilename: &UniqueFilename,
+			Folder:         "users",
+		})
+
+		if err != nil {
+			return err
+		}
+
+		data.Image = res.URL
+	}
+
+	var mod = new(User)
+	mod.FromEntity(data)
+
+	if err := repo.mysqlDB.WithContext(ctx).Where(&User{Id: id}).Updates(mod).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repo *userRepository) Delete(ctx context.Context, id uint) error {

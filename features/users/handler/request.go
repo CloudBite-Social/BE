@@ -1,6 +1,9 @@
 package handler
 
-import "sosmed/features/users"
+import (
+	"io"
+	"sosmed/features/users"
+)
 
 type RegisterUserRequest struct {
 	Name     string `json:"name"`
@@ -40,6 +43,35 @@ func (req *LoginUserRequest) ToEntity() *users.User {
 
 	if req.Password != "" {
 		ent.Password = req.Password
+	}
+
+	return ent
+}
+
+type UpdateUserRequest struct {
+	Name     string `form:"name"`
+	Email    string `form:"email"`
+	Password string `form:"password"`
+	Image    io.Reader
+}
+
+func (req *UpdateUserRequest) ToEntity() *users.User {
+	var ent = new(users.User)
+
+	if req.Name != "" {
+		ent.Name = req.Name
+	}
+
+	if req.Email != "" {
+		ent.Email = req.Email
+	}
+
+	if req.Password != "" {
+		ent.Password = req.Password
+	}
+
+	if req.Image != nil {
+		ent.RawImage = req.Image
 	}
 
 	return ent

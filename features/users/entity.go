@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -12,7 +13,9 @@ type User struct {
 	Name     string
 	Email    string
 	Password string
+
 	Image    string
+	RawImage io.Reader
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -180,7 +180,7 @@ func TestUserServiceLogin(t *testing.T) {
 
 		result, token, err := srv.Login(ctx, caseData)
 
-		assert.ErrorContains(t, err, "some error from encrypt")
+		assert.ErrorContains(t, err, "wrong password")
 		assert.Nil(t, result)
 		assert.Nil(t, token)
 
@@ -245,6 +245,75 @@ func TestUserServiceLogin(t *testing.T) {
 
 func TestUserServiceGetById(t *testing.T) {}
 
-func TestUserServiceUpdate(t *testing.T) {}
+func TestUserServiceUpdate(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var enc = encMock.NewBcryptHash(t)
+	var srv = NewUserService(repo, enc)
+	var ctx = context.Background()
+
+	t.Run("invalid entity", func(t *testing.T) {
+		caseData := users.User{}
+
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "please fill input correctly")
+	})
+
+	t.Run("invalid id", func(t *testing.T) {
+		caseData := users.User{
+			Name: "kijang 1",
+		}
+
+		err := srv.Update(ctx, 0, caseData)
+
+		assert.ErrorContains(t, err, "invalid user id")
+	})
+
+	t.Run("error from encrypt", func(t *testing.T) {
+		var caseData = users.User{
+			Password: "test",
+		}
+
+		enc.On("Hash", caseData.Password).Return("", errors.New("some error from encrypt")).Once()
+
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "some error from encrypt")
+
+		enc.AssertExpectations(t)
+	})
+
+	t.Run("error from repository", func(t *testing.T) {
+		caseData := users.User{
+			Name: "kijang 1",
+		}
+
+		repo.On("Update", ctx, uint(1), caseData).Return(errors.New("some error from repository")).Once()
+
+		err := srv.Update(ctx, 1, caseData)
+
+		assert.ErrorContains(t, err, "some error from repository")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		caseData := users.User{
+			Name:     "kijang 1",
+			Password: "test",
+		}
+
+		enc.On("Hash", caseData.Password).Return("secret", nil).Once()
+
+		caseData.Password = "secret"
+		repo.On("Update", ctx, uint(1), caseData).Return(nil).Once()
+
+		caseData.Password = "test"
+		err := srv.Update(ctx, 1, caseData)
+		assert.Nil(t, err)
+
+		repo.AssertExpectations(t)
+	})
+}
 
 func TestUserServiceDelete(t *testing.T) {}
