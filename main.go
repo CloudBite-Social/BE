@@ -53,13 +53,13 @@ func main() {
 	postService := ps.NewPostService(postRepository)
 	postHandler := ph.NewPostHandler(postService)
 
-	userRepository := ur.NewUserRepository(dbConnection, cld)
-	userService := us.NewUserService(userRepository, enc)
-	userHandler := uh.NewUserHandler(userService, postService)
-
 	commentRepository := cr.NewCommentRepository(dbConnection)
 	commentService := cs.NewCommentService(commentRepository)
 	commentHandler := ch.NewCommentHandler(commentService)
+
+	userRepository := ur.NewUserRepository(dbConnection, cld)
+	userService := us.NewUserService(userRepository, enc)
+	userHandler := uh.NewUserHandler(userService, postService, commentService)
 
 	app := echo.New()
 

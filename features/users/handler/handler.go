@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"sosmed/features/comments"
 	"sosmed/features/posts"
 	"sosmed/features/users"
 	"sosmed/helpers/tokens"
@@ -11,16 +12,18 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
-func NewUserHandler(userService users.Service, postService posts.Service) users.Handler {
+func NewUserHandler(userService users.Service, postService posts.Service, commetService comments.Service) users.Handler {
 	return &userHandler{
-		userService: userService,
-		postService: postService,
+		userService:   userService,
+		postService:   postService,
+		commetService: commetService,
 	}
 }
 
 type userHandler struct {
-	userService users.Service
-	postService posts.Service
+	userService   users.Service
+	postService   posts.Service
+	commetService comments.Service
 }
 
 func (hdl *userHandler) Register() echo.HandlerFunc {
@@ -219,7 +222,8 @@ func (hdl *userHandler) Delete() echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, response)
 		}
 
-		// TODO need post of user
+		// TODO need delete post of user
+		// TODO need delete comment of user
 
 		if err := hdl.userService.Delete(c.Request().Context(), userId); err != nil {
 			c.Logger().Error(err)
