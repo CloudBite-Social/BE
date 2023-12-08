@@ -47,3 +47,15 @@ func (srv *commentService) Delete(ctx context.Context, commentId uint) error {
 
 	return nil
 }
+
+func (srv *commentService) DeleteByPostId(ctx context.Context, postId uint) error {
+	if postId == 0 {
+		return errors.New("validate: invalid post id")
+	}
+
+	if err := srv.repo.DeleteByPostId(ctx, postId); err != nil {
+		return err
+	}
+
+	return nil
+}
