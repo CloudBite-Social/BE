@@ -169,5 +169,37 @@ func (hdl *userHandler) Update() echo.HandlerFunc {
 }
 
 func (hdl *userHandler) Delete() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+
+		userId, err := tokens.ExtractToken(c.Get("user").(*jwt.Token))
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "unauthorized"
+			return c.JSON(http.StatusUnauthorized, response)
+		}
+
+		// TODO need post of user
+
+		if err := hdl.userService.Delete(c.Request().Context(), userId); err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "user not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		response["message"] = "delete user success"
+		return c.JSON(http.StatusOK, response)
+	}
 }

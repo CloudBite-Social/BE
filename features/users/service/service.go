@@ -104,5 +104,13 @@ func (srv *userService) Update(ctx context.Context, id uint, data users.User) er
 }
 
 func (srv *userService) Delete(ctx context.Context, id uint) error {
-	panic("unimplemented")
+	if id == 0 {
+		return errors.New("validate: invalid user id")
+	}
+
+	if err := srv.repo.Delete(ctx, id); err != nil {
+		return err
+	}
+
+	return nil
 }

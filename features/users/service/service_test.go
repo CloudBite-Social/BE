@@ -259,14 +259,14 @@ func TestUserServiceUpdate(t *testing.T) {
 		assert.ErrorContains(t, err, "please fill input correctly")
 	})
 
-	t.Run("invalid id", func(t *testing.T) {
+	t.Run("invalid user id", func(t *testing.T) {
 		caseData := users.User{
 			Name: "kijang 1",
 		}
 
 		err := srv.Update(ctx, 0, caseData)
 
-		assert.ErrorContains(t, err, "invalid user id")
+		assert.ErrorContains(t, err, "user id")
 	})
 
 	t.Run("error from encrypt", func(t *testing.T) {
@@ -316,4 +316,35 @@ func TestUserServiceUpdate(t *testing.T) {
 	})
 }
 
-func TestUserServiceDelete(t *testing.T) {}
+func TestUserServiceDelete(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var enc = encMock.NewBcryptHash(t)
+	var srv = NewUserService(repo, enc)
+	var ctx = context.Background()
+
+	t.Run("invalid id", func(t *testing.T) {
+		err := srv.Delete(ctx, 0)
+
+		assert.ErrorContains(t, err, "id")
+	})
+
+	t.Run("error from repository", func(t *testing.T) {
+		repo.On("Delete", ctx, uint(1)).Return(errors.New("some error from repository")).Once()
+
+		err := srv.Delete(ctx, 1)
+
+		assert.ErrorContains(t, err, "some error from repository")
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		repo.On("Delete", ctx, uint(1)).Return(nil).Once()
+
+		err := srv.Delete(ctx, 1)
+
+		assert.Nil(t, err)
+
+		repo.AssertExpectations(t)
+	})
+}

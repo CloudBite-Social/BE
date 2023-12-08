@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"sosmed/features/users"
 
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -72,5 +73,14 @@ func (repo *userRepository) Update(ctx context.Context, id uint, data users.User
 }
 
 func (repo *userRepository) Delete(ctx context.Context, id uint) error {
-	panic("unimplemented")
+	qry := repo.mysqlDB.WithContext(ctx).Delete(&User{}, id)
+	if qry.Error != nil {
+		return qry.Error
+	}
+
+	if qry.RowsAffected == 0 {
+		return errors.New("not found")
+	}
+
+	return nil
 }
