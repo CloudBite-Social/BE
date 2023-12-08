@@ -13,7 +13,7 @@ type UserResponse struct {
 	Image     string    `json:"image,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 
-	Posts []UserPostResponse `json:"posts,omitempty"`
+	Posts []UserPostResponse `json:"posts"`
 
 	Token string `json:"token,omitempty"`
 }

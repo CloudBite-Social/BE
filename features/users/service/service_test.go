@@ -7,6 +7,7 @@ import (
 	"sosmed/features/users/mocks"
 	encMock "sosmed/helpers/encrypt/mocks"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -243,7 +244,50 @@ func TestUserServiceLogin(t *testing.T) {
 	})
 }
 
-func TestUserServiceGetById(t *testing.T) {}
+func TestUserServiceGetById(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var enc = encMock.NewBcryptHash(t)
+	var srv = NewUserService(repo, enc)
+	var ctx = context.Background()
+
+	t.Run("invalid id", func(t *testing.T) {
+		result, err := srv.GetById(ctx, 0)
+
+		assert.ErrorContains(t, err, "id")
+		assert.Nil(t, result)
+	})
+
+	t.Run("error from repository", func(t *testing.T) {
+		repo.On("GetById", ctx, uint(1)).Return(nil, errors.New("some error from repository")).Once()
+
+		result, err := srv.GetById(ctx, 1)
+
+		assert.ErrorContains(t, err, "some error from repository")
+		assert.Nil(t, result)
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		caseData := &users.User{
+			Id:        1,
+			Name:      "kijang 1",
+			Email:     "kijang1@mail.com",
+			Password:  "$2a$10$lT5fLMaj8497a1DBntlX5eMQi7/rkaV66JipGX80VrBBfLTxYv6GS",
+			Image:     "https://placehold.co/400x400/png",
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		repo.On("GetById", ctx, uint(1)).Return(caseData, nil).Once()
+
+		result, err := srv.GetById(ctx, 1)
+		assert.Nil(t, err)
+
+		assert.NotNil(t, result)
+
+		repo.AssertExpectations(t)
+	})
+}
 
 func TestUserServiceUpdate(t *testing.T) {
 	var repo = mocks.NewRepository(t)

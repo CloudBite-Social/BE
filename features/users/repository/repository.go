@@ -44,7 +44,13 @@ func (repo *userRepository) Login(ctx context.Context, email string) (*users.Use
 }
 
 func (repo *userRepository) GetById(ctx context.Context, id uint) (*users.User, error) {
-	panic("unimplemented")
+	var mod = new(User)
+
+	if err := repo.mysqlDB.WithContext(ctx).Where(&User{Id: id}).First(mod).Error; err != nil {
+		return nil, err
+	}
+
+	return mod.ToEntity(), nil
 }
 
 func (repo *userRepository) Update(ctx context.Context, id uint, data users.User) error {

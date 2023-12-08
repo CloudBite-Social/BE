@@ -106,7 +106,46 @@ func (hdl *userHandler) Login() echo.HandlerFunc {
 }
 
 func (hdl *userHandler) GetById() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+
+		// TODO need get request pagination
+
+		userId, err := tokens.ExtractToken(c.Get("user").(*jwt.Token))
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "unauthorized"
+			return c.JSON(http.StatusUnauthorized, response)
+		}
+
+		resultUser, err := hdl.userService.GetById(c.Request().Context(), userId)
+		if err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		// TODO need get user post paginated
+
+		var data = new(UserResponse)
+		data.FromEntity(*resultUser, nil, nil)
+
+		response["message"] = "get detail of user success"
+		response["data"] = data
+		return c.JSON(http.StatusOK, response)
+	}
 }
 
 func (hdl *userHandler) Update() echo.HandlerFunc {

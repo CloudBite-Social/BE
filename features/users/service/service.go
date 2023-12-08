@@ -75,7 +75,16 @@ func (srv *userService) Login(ctx context.Context, data users.User) (*users.User
 }
 
 func (srv *userService) GetById(ctx context.Context, id uint) (*users.User, error) {
-	panic("unimplemented")
+	if id == 0 {
+		return nil, errors.New("validate: invalid user id")
+	}
+
+	result, err := srv.repo.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (srv *userService) Update(ctx context.Context, id uint, data users.User) error {
