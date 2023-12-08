@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"reflect"
 	"sosmed/features/users"
 	"sosmed/helpers/encrypt"
 	"sosmed/helpers/tokens"
@@ -88,10 +87,6 @@ func (srv *userService) GetById(ctx context.Context, id uint) (*users.User, erro
 }
 
 func (srv *userService) Update(ctx context.Context, id uint, data users.User) error {
-	if reflect.ValueOf(data).IsZero() {
-		return errors.New("validate: please fill input correctly")
-	}
-
 	if id == 0 {
 		return errors.New("validate: invalid user id")
 	}

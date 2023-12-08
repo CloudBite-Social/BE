@@ -295,14 +295,6 @@ func TestUserServiceUpdate(t *testing.T) {
 	var srv = NewUserService(repo, enc)
 	var ctx = context.Background()
 
-	t.Run("invalid entity", func(t *testing.T) {
-		caseData := users.User{}
-
-		err := srv.Update(ctx, 1, caseData)
-
-		assert.ErrorContains(t, err, "please fill input correctly")
-	})
-
 	t.Run("invalid user id", func(t *testing.T) {
 		caseData := users.User{
 			Name: "kijang 1",
