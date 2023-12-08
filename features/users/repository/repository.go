@@ -32,7 +32,13 @@ func (repo *userRepository) Register(ctx context.Context, data users.User) error
 }
 
 func (repo *userRepository) Login(ctx context.Context, email string) (*users.User, error) {
-	panic("unimplemented")
+	var mod = new(User)
+
+	if err := repo.mysqlDB.WithContext(ctx).Where(&User{Email: email}).First(mod).Error; err != nil {
+		return nil, err
+	}
+
+	return mod.ToEntity(), nil
 }
 
 func (repo *userRepository) GetById(ctx context.Context, id uint) (*users.User, error) {

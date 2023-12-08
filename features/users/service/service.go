@@ -5,6 +5,7 @@ import (
 	"errors"
 	"sosmed/features/users"
 	"sosmed/helpers/encrypt"
+	"sosmed/helpers/tokens"
 )
 
 func NewUserService(repo users.Repository, enc encrypt.BcryptHash) users.Service {
@@ -47,7 +48,29 @@ func (srv *userService) Register(ctx context.Context, data users.User) error {
 }
 
 func (srv *userService) Login(ctx context.Context, data users.User) (*users.User, *string, error) {
-	panic("unimplemented")
+	if data.Email == "" {
+		return nil, nil, errors.New("validate: email can't empty")
+	}
+
+	if data.Password == "" {
+		return nil, nil, errors.New("validate: password can't empty")
+	}
+
+	result, err := srv.repo.Login(ctx, data.Email)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if err := srv.enc.Compare(result.Password, data.Password); err != nil {
+		return nil, nil, errors.New("validate: wrong password")
+	}
+
+	token, err := tokens.GenerateJWT(result.Id)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return result, &token, nil
 }
 
 func (srv *userService) GetById(ctx context.Context, id uint) (*users.User, error) {

@@ -58,7 +58,49 @@ func (hdl *userHandler) Register() echo.HandlerFunc {
 }
 
 func (hdl *userHandler) Login() echo.HandlerFunc {
-	panic("unimplemented")
+	return func(c echo.Context) error {
+		var response = make(map[string]any)
+		var request = new(LoginUserRequest)
+
+		if err := c.Bind(request); err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "please fill input correctly"
+			return c.JSON(http.StatusBadRequest, response)
+		}
+
+		var input = request.ToEntity()
+
+		result, token, err := hdl.userService.Login(c.Request().Context(), *input)
+		if err != nil {
+			c.Logger().Error(err)
+
+			if strings.Contains(err.Error(), "validate") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "wrong password") {
+				response["message"] = err.Error()
+				return c.JSON(http.StatusBadRequest, response)
+			}
+
+			if strings.Contains(err.Error(), "not found") {
+				response["message"] = "user not found"
+				return c.JSON(http.StatusNotFound, response)
+			}
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		var data = new(UserResponse)
+		data.FromEntity(*result, token, nil)
+
+		response["message"] = "login success"
+		response["data"] = data
+		return c.JSON(http.StatusOK, response)
+	}
 }
 
 func (hdl *userHandler) GetById() echo.HandlerFunc {

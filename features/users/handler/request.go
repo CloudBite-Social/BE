@@ -25,3 +25,22 @@ func (req *RegisterUserRequest) ToEntity() *users.User {
 
 	return ent
 }
+
+type LoginUserRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (req *LoginUserRequest) ToEntity() *users.User {
+	var ent = new(users.User)
+
+	if req.Email != "" {
+		ent.Email = req.Email
+	}
+
+	if req.Password != "" {
+		ent.Password = req.Password
+	}
+
+	return ent
+}

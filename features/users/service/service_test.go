@@ -112,7 +112,136 @@ func TestUserServiceRegister(t *testing.T) {
 	})
 }
 
-func TestUserServiceLogin(t *testing.T) {}
+func TestUserServiceLogin(t *testing.T) {
+	var repo = mocks.NewRepository(t)
+	var enc = encMock.NewBcryptHash(t)
+	var srv = NewUserService(repo, enc)
+	var ctx = context.Background()
+
+	t.Run("invalid email", func(t *testing.T) {
+		var caseData = users.User{
+			Email:    "",
+			Password: "kijang1",
+		}
+
+		result, token, err := srv.Login(ctx, caseData)
+
+		assert.ErrorContains(t, err, "email")
+		assert.Nil(t, result)
+		assert.Nil(t, token)
+	})
+
+	t.Run("invalid password", func(t *testing.T) {
+		var caseData = users.User{
+			Email:    "kijang1@mail.com",
+			Password: "",
+		}
+
+		result, token, err := srv.Login(ctx, caseData)
+
+		assert.ErrorContains(t, err, "password")
+		assert.Nil(t, result)
+		assert.Nil(t, token)
+	})
+
+	t.Run("error from repository", func(t *testing.T) {
+		var caseData = users.User{
+			Email:    "kijang1@mail.com",
+			Password: "kijang1",
+		}
+
+		repo.On("Login", ctx, caseData.Email).Return(nil, errors.New("some error from repository")).Once()
+
+		result, token, err := srv.Login(ctx, caseData)
+
+		assert.ErrorContains(t, err, "some error from repository")
+		assert.Nil(t, result)
+		assert.Nil(t, token)
+
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("error from encrypt", func(t *testing.T) {
+		var caseData = users.User{
+			Email:    "kijang1@mail.com",
+			Password: "kijang1",
+		}
+
+		var caseResult = users.User{
+			Id:       1,
+			Name:     "kijang 1",
+			Email:    "kijang1@mail.com",
+			Image:    "https://placehold.co/400x400/png",
+			Password: "$2a$10$lT5fLMaj8497a1DBntlX5eMQi7/rkaV66JipGX80VrBBfLTxYv6GS",
+		}
+
+		repo.On("Login", ctx, caseData.Email).Return(&caseResult, nil).Once()
+		enc.On("Compare", caseResult.Password, caseData.Password).Return(errors.New("some error from encrypt")).Once()
+
+		result, token, err := srv.Login(ctx, caseData)
+
+		assert.ErrorContains(t, err, "some error from encrypt")
+		assert.Nil(t, result)
+		assert.Nil(t, token)
+
+		enc.AssertExpectations(t)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("error invalid id from generate jwt", func(t *testing.T) {
+		var caseData = users.User{
+			Email:    "kijang1@mail.com",
+			Password: "kijang1",
+		}
+
+		var caseResult = users.User{
+			Id:       0,
+			Name:     "kijang 1",
+			Email:    "kijang1@mail.com",
+			Image:    "https://placehold.co/400x400/png",
+			Password: "$2a$10$lT5fLMaj8497a1DBntlX5eMQi7/rkaV66JipGX80VrBBfLTxYv6GS",
+		}
+
+		repo.On("Login", ctx, caseData.Email).Return(&caseResult, nil).Once()
+		enc.On("Compare", caseResult.Password, caseData.Password).Return(nil).Once()
+
+		result, token, err := srv.Login(ctx, caseData)
+
+		assert.ErrorContains(t, err, "invalid user id")
+		assert.Nil(t, result)
+		assert.Nil(t, token)
+
+		enc.AssertExpectations(t)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("success", func(t *testing.T) {
+		var caseData = users.User{
+			Email:    "kijang1@mail.com",
+			Password: "kijang1",
+		}
+
+		var caseResult = users.User{
+			Id:       1,
+			Name:     "kijang 1",
+			Email:    "kijang1@mail.com",
+			Image:    "https://placehold.co/400x400/png",
+			Password: "$2a$10$lT5fLMaj8497a1DBntlX5eMQi7/rkaV66JipGX80VrBBfLTxYv6GS",
+		}
+
+		repo.On("Login", ctx, caseData.Email).Return(&caseResult, nil).Once()
+		enc.On("Compare", caseResult.Password, caseData.Password).Return(nil).Once()
+
+		result, token, err := srv.Login(ctx, caseData)
+
+		assert.Nil(t, err)
+		assert.NotNil(t, result)
+		assert.NotNil(t, token)
+
+		enc.AssertExpectations(t)
+		repo.AssertExpectations(t)
+	})
+}
 
 func TestUserServiceGetById(t *testing.T) {}
 
