@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"sosmed/features/comments"
 	"sosmed/features/posts"
 	"sosmed/helpers/filters"
 	"sosmed/helpers/tokens"
@@ -13,14 +14,16 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
-func NewPostHandler(service posts.Service) posts.Handler {
+func NewPostHandler(service posts.Service, commentService comments.Service) posts.Handler {
 	return &postHandler{
-		service: service,
+		service:        service,
+		commentService: commentService,
 	}
 }
 
 type postHandler struct {
-	service posts.Service
+	service        posts.Service
+	commentService comments.Service
 }
 
 func (hdl *postHandler) Create() echo.HandlerFunc {
@@ -230,20 +233,22 @@ func (hdl *postHandler) Delete() echo.HandlerFunc {
 		if err != nil {
 			c.Logger().Error(err)
 
-			response["message"] = "bad request"
+			response["message"] = "invalid post id"
 			return c.JSON(http.StatusBadRequest, response)
 		}
+
+		// TODO need delete comment post
 
 		if err := hdl.service.Delete(c.Request().Context(), uint(postId)); err != nil {
 			c.Logger().Error(err)
 
-			if strings.Contains(err.Error(), "invalid data") {
-				response["message"] = "bad request"
+			if strings.Contains(err.Error(), "validate: ") {
+				response["message"] = strings.ReplaceAll(err.Error(), "validate: ", "")
 				return c.JSON(http.StatusBadRequest, response)
 			}
 
 			if strings.Contains(err.Error(), "not found") {
-				response["message"] = "not found"
+				response["message"] = "post not found"
 				return c.JSON(http.StatusNotFound, response)
 			}
 
