@@ -96,8 +96,8 @@ func (hdl *userHandler) Login() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, response)
 		}
 
-		var data = new(UserResponse)
-		data.FromEntity(*result, token, nil)
+		var data = new(AuthResponse)
+		data.FromEntity(*result, token)
 
 		response["message"] = "login success"
 		response["data"] = data
@@ -140,7 +140,7 @@ func (hdl *userHandler) GetById() echo.HandlerFunc {
 		// TODO need get user post paginated
 
 		var data = new(UserResponse)
-		data.FromEntity(*resultUser, nil, nil)
+		data.FromEntity(*resultUser, nil)
 
 		response["message"] = "get detail of user success"
 		response["data"] = data
