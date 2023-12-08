@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"sosmed/features/comments"
 	"sosmed/features/posts"
 	"sosmed/features/users"
+	"sosmed/helpers/filters"
 	"sosmed/helpers/tokens"
 	"strings"
 
@@ -111,8 +113,16 @@ func (hdl *userHandler) Login() echo.HandlerFunc {
 func (hdl *userHandler) GetById() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var response = make(map[string]any)
+		var baseUrl = c.Scheme() + "://" + c.Request().Host
 
-		// TODO need get request pagination
+		var pagination = new(filters.Pagination)
+		c.Bind(pagination)
+		if pagination.Limit == 0 {
+			pagination.Limit = 5
+		}
+
+		var search = new(filters.Search)
+		c.Bind(search)
 
 		userId, err := tokens.ExtractToken(c.Get("user").(*jwt.Token))
 		if err != nil {
@@ -140,12 +150,40 @@ func (hdl *userHandler) GetById() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, response)
 		}
 
-		// TODO need get user post paginated
+		resultPost, totalData, err := hdl.postService.GetList(c.Request().Context(), filters.Filter{Pagination: *pagination, Search: *search}, &userId)
+		if err != nil {
+			c.Logger().Error(err)
+
+			response["message"] = "internal server error"
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		var paginationResponse = make(map[string]any)
+		if pagination.Start >= (pagination.Limit) {
+			prev := fmt.Sprintf("%s%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Start-pagination.Limit, pagination.Limit)
+			if search.Keyword != "" {
+				prev += "&keyword=" + search.Keyword
+			}
+			paginationResponse["prev"] = prev
+		} else {
+			paginationResponse["prev"] = nil
+		}
+
+		if totalData > pagination.Start+pagination.Limit {
+			next := fmt.Sprintf("%s%s?start=%d&limit=%d", baseUrl, c.Path(), pagination.Start+pagination.Limit, pagination.Limit)
+			if search.Keyword != "" {
+				next += "&keyword=" + search.Keyword
+			}
+			paginationResponse["next"] = next
+		} else {
+			paginationResponse["next"] = nil
+		}
 
 		var data = new(UserResponse)
-		data.FromEntity(*resultUser, nil)
+		data.FromEntity(*resultUser, resultPost)
 
 		response["message"] = "get detail of user success"
+		response["pagination"] = paginationResponse
 		response["data"] = data
 		return c.JSON(http.StatusOK, response)
 	}
