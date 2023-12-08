@@ -1,6 +1,6 @@
 module sosmed
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/creasty/defaults v1.5.1 // indirect
